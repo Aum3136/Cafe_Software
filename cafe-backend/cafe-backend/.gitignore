@@ -1,0 +1,5 @@
+node_modules/
+.env
+data/cafe.db
+data/cafe.db-shm
+data/cafe.db-wal

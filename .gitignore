@@ -1,0 +1,26 @@
+# Node modules
+**/node_modules/
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# SQLite Database files
+**/data/*.db
+**/data/*.db-journal
+**/data/*.db-shm
+**/data/*.db-wal
+
+# Build directories
+**/dist/
+**/.vite/
+
+# Zip files
+*.zip
+
+# System files
+.DS_Store
+Thumbs.db
