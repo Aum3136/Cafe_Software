@@ -3,6 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { VegDot } from '../components/VegDot';
 import { useCart } from '../context/CartContext';
 import type { CafeInfo, MenuItem, MenuCategory } from '../types';
+import { DishExperienceModal } from '../components/DishExperienceModal';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -23,6 +24,7 @@ export function CustomerMenu() {
   const [menu, setMenu] = useState<MenuCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedExperienceItem, setSelectedExperienceItem] = useState<MenuItem | null>(null);
 
   // Filter & search states
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -59,8 +61,38 @@ export function CustomerMenu() {
       }
 
       const data = await response.json();
+      
+      // Inject client-side mock 3D model URLs onto premium items for verification
+      const updatedMenu = data.menu.map((cat: MenuCategory) => ({
+        ...cat,
+        items: cat.items.map((item: MenuItem) => {
+          if (item.name === 'Masala Chai') {
+            return {
+              ...item,
+              '3d_model_url': 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Avocado/glTF-Binary/Avocado.glb',
+              ingredients: ['Fresh Ginger', 'Cardamom Pods', 'Assam Tea Leaves', 'Full Cream Milk', 'Sugar']
+            };
+          }
+          if (item.name === 'Samosa (2 pcs)') {
+            return {
+              ...item,
+              '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
+              ingredients: ['Spiced Potatoes', 'Green Peas', 'Crispy Maida Shell', 'Coriander Seeds', 'Mint Chutney']
+            };
+          }
+          if (item.name === 'Cold Coffee') {
+            return {
+              ...item,
+              '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
+              ingredients: ['Espresso Shot', 'Chilled Milk', 'Cocoa Powder', 'Vanilla Ice Cream']
+            };
+          }
+          return item;
+        })
+      }));
+
       setCafe(data.cafe);
-      setMenu(data.menu);
+      setMenu(updatedMenu);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to fetch menu items.');
@@ -335,7 +367,8 @@ export function CustomerMenu() {
                   return (
                     <article
                       key={item.id}
-                      className="flex gap-3 bg-surface rounded-2xl p-3 shadow-card hover:shadow-md transition-all border border-line/40"
+                      onClick={() => setSelectedExperienceItem(item)}
+                      className="flex gap-3 bg-surface rounded-2xl p-3 shadow-card hover:shadow-md transition-all border border-line/40 cursor-pointer"
                     >
                       {/* Photo or Placeholder */}
                       <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-saffron-50">
@@ -377,15 +410,24 @@ export function CustomerMenu() {
 
                           {qty === 0 ? (
                             <button
-                              onClick={() => addToCart(item)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart(item);
+                              }}
                               className="px-4 py-1.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition-all"
                             >
                               + ADD
                             </button>
                           ) : (
-                            <div className="flex items-center bg-saffron-500 rounded-xl overflow-hidden shadow-sm">
+                            <div 
+                              className="flex items-center bg-saffron-500 rounded-xl overflow-hidden shadow-sm"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <button
-                                onClick={() => removeFromCart(item.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFromCart(item.id);
+                                }}
                                 className="w-8 h-8 flex items-center justify-center text-white text-sm font-bold hover:bg-saffron-600 active:scale-90 transition-all"
                               >
                                 −
@@ -394,7 +436,10 @@ export function CustomerMenu() {
                                 {qty}
                               </span>
                               <button
-                                onClick={() => addToCart(item)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  addToCart(item);
+                                }}
                                 className="w-8 h-8 flex items-center justify-center text-white text-sm font-bold hover:bg-saffron-600 active:scale-90 transition-all"
                               >
                                 +
@@ -450,6 +495,17 @@ export function CustomerMenu() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── IMMERSIVE EXPERIENCE & 3D PREVIEW MODAL ── */}
+      {selectedExperienceItem && (
+        <DishExperienceModal
+          item={selectedExperienceItem}
+          qty={getQuantity(selectedExperienceItem.id)}
+          onAdd={() => addToCart(selectedExperienceItem)}
+          onRemove={() => removeFromCart(selectedExperienceItem.id)}
+          onClose={() => setSelectedExperienceItem(null)}
+        />
       )}
     </div>
   );
