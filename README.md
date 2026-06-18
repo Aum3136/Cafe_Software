@@ -89,12 +89,27 @@ Make sure you have [Node.js](https://nodejs.org/) installed.
 ### Checkout Flow
 *   **Route**: `/checkout/:cafeSlug` (e.g. `http://localhost:5173/checkout/chai-corner`)
 *   **Features**:
-    *   **Prefilled Table Numbers**: If a table parameter was caught from the URL, the input field automatically pre-fills and sets itself to **read-only** so customer cannot modify it.
+    *   **Prefilled Table Numbers**: If a table parameter was caught from the URL, the input field automatically pre-fills and sets itself to **read-only** so customers cannot modify it.
     *   **Success Screen**: Displays order details, ID, and a corrected FSSAI-style standard confirmation summary.
 
-### Owner Settings
-*   **Route**: `/owner/qr` (e.g. `http://localhost:5173/owner/qr`)
+### Kitchen View (Week 3)
+*   **Route**: `/owner/orders` (Requires JWT Authentication)
 *   **Features**:
+    *   **Live Order Queue**: Lists incoming orders for the logged-in owner's specific cafe, sorted with the newest first.
+    *   **Status Management**: Allows changing order states (e.g., from `pending` to `preparing` or `completed`) with instant database persistence.
+    *   **Kitchen-Friendly UI**: Organized layout showing table numbers, items, quantities, and elapsed time since the order was placed.
+
+### Owner Management Dashboard (Week 4)
+*   **Unified Layout**: Reusable shell (`DashboardLayout.tsx`) with a responsive sidebar. Securely intercepts page loads to verify JWT presence, falling back to a centralized owner login modal.
+*   **Menu Item Manager**: `/dashboard/menu`
+    *   Clean data grid displaying all menu items, prices, categories, and Veg/Non-Veg indicators.
+    *   **Live "Sold-Out" Switch**: Instantly toggles the item's availability in SQLite, instantly hiding/showing the item on the customer menu.
+    *   **Add Item Modal**: Add items with name, price, description, category, and veg status.
+*   **Category Manager**: `/dashboard/categories`
+    *   Displays all categories with name, sort order, active status, and item counts.
+    *   **Add & Edit Modals**: Add new categories or update names, sort orders, and active toggles.
+    *   **Foreign Key Safety**: Safe deletion interceptor that warns owners if a category has active items (`item_count > 0`), directing them to reassign or delete the items first to prevent SQLite crashes.
+*   **QR Generator**: `/owner/qr`
     *   Generates table QR codes dynamically on input.
     *   Direct live target URL preview.
     *   Downloadable QR code PNGs for printing.
