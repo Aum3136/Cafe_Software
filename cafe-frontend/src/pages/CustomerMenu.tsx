@@ -73,18 +73,18 @@ export function CustomerMenu() {
               ingredients: ['Fresh Ginger', 'Cardamom Pods', 'Assam Tea Leaves', 'Full Cream Milk', 'Sugar']
             };
           }
-          if (item.name === 'Samosa (2 pcs)') {
+          if (item.name === 'The Classic Cheese & Garlic') {
             return {
               ...item,
               '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
-              ingredients: ['Spiced Potatoes', 'Green Peas', 'Crispy Maida Shell', 'Coriander Seeds', 'Mint Chutney']
+              ingredients: ['Crispy Bread', 'Cheddar Cheese', 'Mozzarella', 'Garlic Butter', 'Oregano']
             };
           }
-          if (item.name === 'Cold Coffee') {
+          if (item.name === 'Classic Blend Cold Coffee') {
             return {
               ...item,
               '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
-              ingredients: ['Espresso Shot', 'Chilled Milk', 'Cocoa Powder', 'Vanilla Ice Cream']
+              ingredients: ['Espresso Shot', 'Chilled Milk', 'Sweet Cream', 'Ice Cubes']
             };
           }
           return item;
