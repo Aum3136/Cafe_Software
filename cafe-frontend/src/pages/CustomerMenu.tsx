@@ -229,54 +229,74 @@ export function CustomerMenu() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col max-w-md mx-auto shadow-lg relative pb-28">
-      {/* ── STICKY TOP BANNER ── */}
-      <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-line shadow-sm">
-        <div className="px-4 py-3 flex items-center justify-between">
+      {/* ── HERO BANNER (Non-Sticky) ── */}
+      <div className="relative h-60 w-full bg-ink overflow-hidden flex flex-col justify-end">
+        {/* Ambient cover photo */}
+        <img
+          src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800"
+          alt="Atmospheric Cafe Lounge"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-105"
+        />
+        {/* Dark moody gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-black/20" />
+
+        {/* Floating Table Badge */}
+        <div className="absolute top-4 right-4 z-10">
+          {table ? (
+            <span className="bg-saffron-500/90 text-canvas text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm border border-saffron-100/10">
+              📍 Table {table}
+            </span>
+          ) : (
+            <span className="bg-white/10 text-canvas/80 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm border border-white/5">
+              🚶 Pickup
+            </span>
+          )}
+        </div>
+
+        {/* Cafe Info Footer inside Hero */}
+        <div className="relative z-10 px-5 pb-5 pt-12 text-left space-y-1.5">
           <div className="flex items-center gap-3">
             {cafe?.logo_url ? (
               <img
                 src={cafe.logo_url}
                 alt={cafe.name}
-                className="w-10 h-10 rounded-full object-cover border border-line"
+                className="w-12 h-12 rounded-full object-cover border-2 border-canvas shadow-md"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-saffron-100 flex items-center justify-center">
-                <span className="text-saffron-600 font-bold text-lg">
+              <div className="w-12 h-12 rounded-full bg-saffron-500 flex items-center justify-center border-2 border-canvas shadow-md">
+                <span className="text-canvas font-black text-lg font-serif">
                   {cafe?.name?.[0] ?? '☕'}
                 </span>
               </div>
             )}
             <div>
-              <h1 className="font-bold text-ink text-base leading-tight">{cafe?.name}</h1>
-              {cafe?.address && (
-                <p className="text-xs text-muted truncate max-w-[200px]">{cafe.address}</p>
-              )}
+              <h1 className="text-xl font-black text-white font-serif tracking-wide leading-tight drop-shadow-sm">
+                {cafe?.name}
+              </h1>
+              <p className="text-[9px] text-canvas/80 font-black uppercase tracking-widest font-serif">
+                Where Magic is Brewing
+              </p>
             </div>
           </div>
-
-          {/* Table / QR Info Banner */}
-          <div className="flex flex-col items-end">
-            {table ? (
-              <span className="bg-saffron-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                Table {table}
-              </span>
-            ) : (
-              <span className="bg-line text-muted text-[10px] font-medium px-2 py-0.5 rounded-full">
-                Self Pickup
-              </span>
-            )}
-          </div>
+          {cafe?.address && (
+            <p className="text-[10px] text-canvas/75 font-medium drop-shadow-sm pl-0.5">
+              📍 {cafe.address}
+            </p>
+          )}
         </div>
+      </div>
 
+      {/* ── STICKY CONTROL HEADER ── */}
+      <header className="sticky top-0 z-30 bg-canvas/85 backdrop-blur-md border-b border-line/40 py-3.5 space-y-3.5 shadow-sm">
         {/* Search & Veg Toggle Row */}
-        <div className="px-4 pb-3 pt-1 flex gap-2 items-center">
+        <div className="px-4 flex gap-2 items-center">
           <div className="relative flex-1">
             <input
               type="text"
               placeholder="Search dishes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-canvas border border-line rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:border-saffron-400 focus:ring-1 focus:ring-saffron-400 transition-all"
+              className="w-full bg-white/75 border border-line rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-saffron-400 focus:ring-1 focus:ring-saffron-400 transition-all font-medium placeholder-ghost"
             />
             {searchQuery && (
               <button
@@ -291,29 +311,29 @@ export function CustomerMenu() {
           {/* Veg Only Toggle */}
           <button
             onClick={() => setVegOnly(!vegOnly)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
               vegOnly
-                ? 'bg-veg/10 border-veg text-veg'
-                : 'bg-canvas border-line text-muted hover:border-muted'
+                ? 'bg-veg/10 border-veg text-veg shadow-sm'
+                : 'bg-white/75 border-line text-muted hover:border-muted'
             }`}
           >
-            <span className={`w-2.5 h-2.5 rounded-full ${vegOnly ? 'bg-veg' : 'bg-ghost'}`} />
+            <span className={`w-2 h-2 rounded-full ${vegOnly ? 'bg-veg animate-pulse' : 'bg-ghost'}`} />
             Veg Only
           </button>
         </div>
 
-        {/* ── HORIZONTAL SLIDING CATEGORY SELECTOR ── */}
+        {/* Frosted Glass Category Selector */}
         <div
           ref={categoryScrollRef}
-          className="flex overflow-x-auto gap-2 px-4 pb-3 scrollbar-hide"
+          className="flex overflow-x-auto gap-2 px-4 pb-0.5 scrollbar-hide"
           style={{ scrollBehavior: 'smooth' }}
         >
           <button
             onClick={() => setActiveCategory('all')}
-            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+            className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
               activeCategory === 'all'
-                ? 'bg-saffron-500 text-white shadow-sm'
-                : 'bg-canvas border border-line text-muted hover:border-ghost'
+                ? 'bg-saffron-500 text-canvas shadow-md'
+                : 'bg-white/40 border border-line/50 text-muted hover:bg-white/60'
             }`}
           >
             All
@@ -322,10 +342,10 @@ export function CustomerMenu() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id.toString())}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all ${
                 activeCategory === cat.id.toString()
-                  ? 'bg-saffron-500 text-white shadow-sm'
-                  : 'bg-canvas border border-line text-muted hover:border-ghost'
+                  ? 'bg-saffron-500 text-canvas shadow-md'
+                  : 'bg-white/40 border border-line/50 text-muted hover:bg-white/60'
               }`}
             >
               {cat.name}
@@ -368,10 +388,10 @@ export function CustomerMenu() {
                     <article
                       key={item.id}
                       onClick={() => setSelectedExperienceItem(item)}
-                      className="flex gap-3 bg-surface rounded-2xl p-3 shadow-card hover:shadow-md transition-all border border-line/40 cursor-pointer"
+                      className="flex gap-4 bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(26,20,16,0.03)] hover:shadow-[0_8px_30px_rgb(26,20,16,0.06)] transition-all duration-300 border border-line/25 cursor-pointer relative overflow-hidden"
                     >
                       {/* Photo or Placeholder */}
-                      <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-saffron-50">
+                      <div className="relative flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-saffron-50 border border-line/10">
                         {item.image_url ? (
                           <img
                             src={item.image_url}
@@ -391,12 +411,12 @@ export function CustomerMenu() {
                         <div>
                           <div className="flex items-start gap-1.5">
                             <VegDot isVeg={item.is_veg === 1} />
-                            <h3 className="text-xs font-bold text-ink leading-snug line-clamp-2">
+                            <h3 className="text-xs font-black text-ink leading-snug font-sans tracking-tight">
                               {item.name}
                             </h3>
                           </div>
                           {item.description && (
-                            <p className="text-[10px] text-muted mt-1 line-clamp-2 leading-relaxed">
+                            <p className="text-[10px] text-muted mt-1 line-clamp-2 leading-relaxed font-medium">
                               {item.description}
                             </p>
                           )}
@@ -404,15 +424,15 @@ export function CustomerMenu() {
 
                         {/* Price & Add to Cart Controls */}
                         <div className="flex items-center justify-between mt-2 pt-1">
-                          <span className="text-sm font-extrabold text-saffron-600">
+                          <span className="text-sm font-black text-[#4A5D4E]">
                             ₹{item.price}
                           </span>
 
                           {qty === 0 ? (
                             <button
                               onClick={(e) => {
-                                e.stopPropagation();
-                                addToCart(item);
+                                  e.stopPropagation();
+                                  addToCart(item);
                               }}
                               className="px-4 py-1.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition-all"
                             >
@@ -460,21 +480,21 @@ export function CustomerMenu() {
       {/* ── BOTTOM CART DRAWER SUMMARY ── */}
       {totalItems > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-3 bg-gradient-to-t from-canvas via-canvas/90 to-transparent pointer-events-none max-w-md mx-auto">
-          <div className="bg-ink text-white rounded-2xl px-4 py-3.5 shadow-xl pointer-events-auto flex items-center justify-between animate-slide-up">
+          <div className="bg-[#1C1715] text-canvas rounded-[2rem] px-5 py-4 shadow-[0_12px_40px_rgba(26,20,16,0.22)] pointer-events-auto flex items-center justify-between animate-slide-up border border-white/5">
             <div className="flex items-center gap-3">
-              <div className="bg-saffron-500 text-white text-xs font-bold w-6 h-6 rounded-lg flex items-center justify-center shadow-inner">
+              <div className="bg-saffron-400 text-canvas text-xs font-black w-7 h-7 rounded-xl flex items-center justify-center shadow-inner">
                 {totalItems}
               </div>
               <div>
-                <p className="text-xs text-ghost font-medium">Local Cart Tracker</p>
-                <p className="text-xs font-bold">
+                <p className="text-[9px] text-ghost font-bold uppercase tracking-widest">Cart Summary</p>
+                <p className="text-xs font-black text-white">
                   {totalItems} Item{totalItems !== 1 ? 's' : ''} Selected
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-sm font-extrabold text-saffron-100">
+              <span className="text-sm font-black text-canvas">
                 ₹{totalAmount}
               </span>
               <button
@@ -488,9 +508,9 @@ export function CustomerMenu() {
                   const tableParam = table ? `?table=${encodeURIComponent(table)}` : '';
                   navigate(`/checkout/${cafeSlug}${tableParam}`);
                 }}
-                className="bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md"
+                className="bg-saffron-400 hover:bg-saffron-500 active:scale-95 text-canvas text-xs font-black px-5 py-2.5 rounded-xl transition-all shadow-md uppercase tracking-wider"
               >
-                Place Order
+                Order
               </button>
             </div>
           </div>
