@@ -4,6 +4,10 @@ import { CustomerMenu } from './pages/CustomerMenu';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { QrGenerator } from './pages/QrGenerator';
 import { OwnerOrders } from './pages/OwnerOrders';
+import { MenuManager } from './pages/MenuManager';
+import { CategoryManager } from './pages/CategoryManager';
+import { Reports } from './pages/Reports';
+import { DashboardLayout } from './components/DashboardLayout';
 
 /*
   Route map (Week 2):
@@ -40,10 +44,19 @@ export default function App() {
           <Route path="/checkout/:cafeSlug" element={<CheckoutPage />} />
 
           {/* Owner QR Code Generator */}
-          <Route path="/owner/qr" element={<QrGenerator />} />
+          <Route path="/owner/qr" element={<DashboardLayout><QrGenerator /></DashboardLayout>} />
 
           {/* Owner Orders Kitchen Queue */}
-          <Route path="/owner/orders" element={<OwnerOrders />} />
+          <Route path="/owner/orders" element={<DashboardLayout><OwnerOrders /></DashboardLayout>} />
+
+          {/* Owner Menu Item Manager */}
+          <Route path="/dashboard/menu" element={<DashboardLayout><MenuManager /></DashboardLayout>} />
+
+          {/* Owner Category Manager */}
+          <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManager /></DashboardLayout>} />
+
+          {/* Owner Reports & Sales Analytics */}
+          <Route path="/dashboard/reports" element={<DashboardLayout><Reports /></DashboardLayout>} />
 
           {/* Dev convenience: visiting / shows the seeded test cafe */}
           <Route path="/" element={<Navigate to="/menu/chai-corner" replace />} />

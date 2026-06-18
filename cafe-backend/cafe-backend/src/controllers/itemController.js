@@ -150,4 +150,21 @@ const remove = (req, res, next) => {
   }
 };
 
-module.exports = { list, publicMenu, create, update, remove };
+// PATCH /api/items/:id/toggle-available  — PROTECTED (owner)
+const toggleAvailable = (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const item = db.prepare('SELECT is_available FROM items WHERE id = ? AND cafe_id = ?').get(id, req.cafe.id);
+    if (!item) return res.status(404).json({ error: 'Item not found.' });
+
+    const newStatus = item.is_available === 1 ? 0 : 1;
+    db.prepare('UPDATE items SET is_available = ?, updated_at = ? WHERE id = ? AND cafe_id = ?')
+      .run(newStatus, Math.floor(Date.now() / 1000), id, req.cafe.id);
+
+    res.json({ id: parseInt(id), is_available: newStatus });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { list, publicMenu, create, update, remove, toggleAvailable };
