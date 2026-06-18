@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useMenu } from '../hooks/useMenu';
 import { placeOrder } from '../api/order';
@@ -8,10 +8,12 @@ import { VegDot } from '../components/VegDot';
 export function CheckoutPage() {
   const { cafeSlug } = useParams<{ cafeSlug: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { cart, totalAmount, clearCart, addItem, removeItem } = useCart();
   const { cafe, isLoading } = useMenu(cafeSlug);
 
-  const [tableNumber, setTableNumber] = useState('');
+  const [tableNumber, setTableNumber] = useState(cart.tableNumber || searchParams.get('table') || '');
+  const isTablePrefilled = !!(cart.tableNumber || searchParams.get('table'));
   const [customerNote, setCustomerNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export function CheckoutPage() {
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted">Table Number</span>
-                <span className="font-bold text-ink">{orderSuccess.tableNumber}</span>
+                <span className="font-bold text-ink">{orderSuccess.tableNumber.replace(/tbale/i, 'Table')}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted">Total Amount</span>
@@ -227,10 +229,15 @@ export function CheckoutPage() {
                   id="table-number"
                   type="text"
                   required
+                  readOnly={isTablePrefilled}
                   placeholder="e.g. Table 4, Counter, Bar"
                   value={tableNumber}
                   onChange={e => setTableNumber(e.target.value)}
-                  className="w-full border border-line rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition-colors ${
+                    isTablePrefilled
+                      ? 'bg-line/60 border-line text-muted cursor-not-allowed opacity-80'
+                      : 'bg-canvas border-line focus:border-saffron-500'
+                  }`}
                 />
               </div>
 

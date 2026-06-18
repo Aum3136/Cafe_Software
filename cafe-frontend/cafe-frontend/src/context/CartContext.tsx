@@ -6,14 +6,16 @@ import type { CartItem, MenuItem } from '../types';
 interface CartState {
   cafeSlug: string;
   items: CartItem[];
+  tableNumber?: string;
 }
 
 type CartAction =
   | { type: 'ADD_ITEM';    payload: { slug: string; item: MenuItem } }
   | { type: 'REMOVE_ITEM'; payload: { item_id: number } }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'SET_TABLE_NUMBER'; payload: { tableNumber: string } };
 
-const initialState: CartState = { cafeSlug: '', items: [] };
+const initialState: CartState = { cafeSlug: '', items: [], tableNumber: '' };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -53,8 +55,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { ...state, items: updated };
     }
 
+    case 'SET_TABLE_NUMBER':
+      return { ...state, tableNumber: action.payload.tableNumber };
+
     case 'CLEAR_CART':
-      return initialState;
+      return { ...initialState };
 
     default:
       return state;
@@ -71,6 +76,7 @@ interface CartContextValue {
   removeItem: (item_id: number) => void;
   clearCart: () => void;
   getQuantity: (item_id: number) => number;
+  setTableNumber: (table: string) => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -83,6 +89,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeItem = useCallback((item_id: number) =>
     dispatch({ type: 'REMOVE_ITEM', payload: { item_id } }), []);
   const clearCart  = useCallback(() => dispatch({ type: 'CLEAR_CART' }), []);
+  const setTableNumber = useCallback((table: string) =>
+    dispatch({ type: 'SET_TABLE_NUMBER', payload: { tableNumber: table } }), []);
 
   const getQuantity = useCallback(
     (item_id: number) => cart.items.find(i => i.item_id === item_id)?.quantity ?? 0,
@@ -93,7 +101,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalAmount = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, totalItems, totalAmount, addItem, removeItem, clearCart, getQuantity }}>
+    <CartContext.Provider value={{ cart, totalItems, totalAmount, addItem, removeItem, clearCart, getQuantity, setTableNumber }}>
       {children}
     </CartContext.Provider>
   );

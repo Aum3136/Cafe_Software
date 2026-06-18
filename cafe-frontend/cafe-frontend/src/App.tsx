@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
-import { MenuPage } from './pages/MenuPage';
+import { CustomerMenu } from './pages/CustomerMenu';
 import { CheckoutPage } from './pages/CheckoutPage';
+import { QrGenerator } from './pages/QrGenerator';
 
 /*
   Route map (Week 2):
@@ -32,10 +33,13 @@ export default function App() {
       <CartProvider>
         <Routes>
           {/* Public customer menu — no auth */}
-          <Route path="/menu/:cafeSlug" element={<MenuPage />} />
+          <Route path="/menu/:cafeSlug" element={<CustomerMenu />} />
 
           {/* Checkout page */}
           <Route path="/checkout/:cafeSlug" element={<CheckoutPage />} />
+
+          {/* Owner QR Code Generator */}
+          <Route path="/owner/qr" element={<QrGenerator />} />
 
           {/* Dev convenience: visiting / shows the seeded test cafe */}
           <Route path="/" element={<Navigate to="/menu/chai-corner" replace />} />
