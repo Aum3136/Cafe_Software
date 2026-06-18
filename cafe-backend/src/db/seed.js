@@ -18,6 +18,7 @@ const seed = db.transaction(() => {
     DELETE FROM items;
     DELETE FROM categories;
     DELETE FROM cafes;
+    DELETE FROM sqlite_sequence;
   `);
 
   // ── 1. Cafes ────────────────────────────────────────────────────────────────
