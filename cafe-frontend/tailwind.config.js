@@ -4,31 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Design system — warm Indian cafe palette
-        // Background: warm off-white, not clinical white
-        canvas:  '#FAF8F4',
+        canvas:  '#FAF7F2',
         surface: '#FFFFFF',
-        // Accent: saffron — unmistakably Indian, never seen in Western SaaS templates
         saffron: {
-          50:  '#FFF8ED',
-          100: '#FFEFD0',
-          400: '#F5A623',
-          500: '#E8920A',
-          600: '#C97A06',
+          50:  '#F2F4EF',
+          100: '#E0E6DC',
+          400: '#6B7F65',
+          500: '#3D4A3E',
+          600: '#2C3A2D',
         },
-        // Text
-        ink:    '#1A1410',   // near-black with warmth
-        muted:  '#6B6560',   // secondary text
-        ghost:  '#B0AAA3',   // placeholder / disabled
-        // Status dots (FSSAI standard)
+        ink:    '#1C1917',
+        muted:  '#5C5754',
+        ghost:  '#A8A39F',
         veg:    '#008000',
         nonveg: '#C0392B',
-        // Border
-        line:   '#EDE9E4',
+        line:   '#EDE9E0',
       },
       fontFamily: {
-        // Inter for UI chrome, slightly warm feel
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
         'card': '0 1px 3px rgba(26,20,16,0.07), 0 1px 2px rgba(26,20,16,0.04)',

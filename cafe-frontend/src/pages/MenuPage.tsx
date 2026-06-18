@@ -138,7 +138,7 @@ export function MenuPage() {
             {isLoading ? (
               <div className="h-4 w-32 bg-line rounded animate-pulse" />
             ) : (
-              <h1 className="font-semibold text-ink text-base truncate">{cafe?.name}</h1>
+             <h1 className="font-serif font-semibold text-ink text-base truncate">{cafe?.name}</h1>
             )}
             {cafe?.address && (
               <p className="text-xs text-muted truncate">{cafe.address}</p>
@@ -177,10 +177,7 @@ export function MenuPage() {
               aria-labelledby={`cat-${category.id}`}
             >
               {/* Category heading */}
-              <h2
-                id={`cat-${category.id}`}
-                className="text-base font-semibold text-ink mb-3 pt-1"
-              >
+              <h2 className="font-serif text-base font-semibold text-ink mb-3 pt-1">
                 {category.name}
                 <span className="ml-2 text-xs font-normal text-ghost">
                   {category.items.length} item{category.items.length !== 1 ? 's' : ''}
