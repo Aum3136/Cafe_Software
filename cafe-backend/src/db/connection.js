@@ -1,20 +1,30 @@
-const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
+const Database = require('better-sqlite3');
 require('dotenv').config();
 
 const DB_PATH = process.env.DB_PATH || './data/cafe.db';
 
-// Resolve relative paths from project root, not __dirname
-const resolvedPath = path.resolve(process.cwd(), DB_PATH);
+// Resolve relative paths from project root instead of process.cwd()
+const resolvedPath = path.isAbsolute(DB_PATH)
+  ? DB_PATH
+  : path.resolve(__dirname, '../../', DB_PATH);
+
+// Auto-create directory if it doesn't exist — wrap in try-catch to prevent EROFS errors on Railway build-time
+try {
+  const dir = path.dirname(resolvedPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Warning: Could not create database directory:', err.message);
+}
 
 // Singleton — module cache means this runs once per process
-const db = new Database(resolvedPath, {
-  // WAL mode: faster reads, concurrent reads while writing, safer on Railway
-  // This is the single most important SQLite performance setting
-});
+const db = new Database(resolvedPath);
 
 db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');  // Enforce FK constraints — SQLite has these OFF by default
-db.pragma('busy_timeout = 5000'); // Wait up to 5s if DB is locked, instead of crashing
+db.pragma('foreign_keys = ON');
+db.pragma('busy_timeout = 5000');
 
 module.exports = db;
