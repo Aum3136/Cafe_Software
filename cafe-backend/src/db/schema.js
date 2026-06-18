@@ -143,11 +143,11 @@ console.log('✓ Database schema ready');
 
 // Auto-migration/seeding check for production deployment
 try {
-  const cafe = db.prepare("SELECT name FROM cafes WHERE id = 1").get();
+  const cafe = db.prepare("SELECT name FROM cafes ORDER BY id ASC LIMIT 1").get();
   const itemCount = db.prepare("SELECT COUNT(*) as count FROM items").get().count;
   
-  if (!cafe || cafe.name !== 'The Nirvaan' || itemCount < 10) {
-    console.log('⏳ Running auto-seeding migration for The Nirvaan menu...');
+  if (!cafe || cafe.name !== 'Mélange Cafe & Lounge' || itemCount < 10) {
+    console.log('⏳ Running auto-seeding migration for Mélange Cafe & Lounge menu...');
     require('./seed');
     console.log('✅ Auto-seeding migration complete!');
   }

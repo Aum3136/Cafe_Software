@@ -1,5 +1,5 @@
 /*
-  SEED SCRIPT FOR THE NIRVAAN CAFE & LOUNGE
+  SEED SCRIPT FOR MÉLANGE CAFE & LOUNGE
   Run with: npm run seed
   Safe to re-run — clears existing data first.
 */
@@ -29,7 +29,7 @@ const seed = db.transaction(() => {
   `);
 
   const cafe1 = insertCafe.run({
-    name: 'The Nirvaan',
+    name: 'Mélange Cafe & Lounge',
     slug: 'chai-corner',
     owner_name: 'Rahul Mehta',
     email: 'rahul@chaicorner.in',
@@ -57,7 +57,7 @@ const seed = db.transaction(() => {
     VALUES (@cafe_id, @name, @sort_order)
   `);
 
-  // Cafe 1 (The Nirvaan) Categories
+  // Cafe 1 (Mélange Cafe & Lounge) Categories
   const catRealSandwich = insertCat.run({ cafe_id: c1, name: 'The Real Sandwich',     sort_order: 1 });
   const catOnBread      = insertCat.run({ cafe_id: c1, name: 'On - Bread',             sort_order: 2 });
   const catPizza         = insertCat.run({ cafe_id: c1, name: 'Pizza (10 Inches)',     sort_order: 3 });
@@ -80,7 +80,7 @@ const seed = db.transaction(() => {
     VALUES (@cafe_id, @category_id, @name, @description, @price, @is_veg, @sort_order)
   `);
 
-  // ── Cafe 1: The Nirvaan Items (70 items) ──
+  // ── Cafe 1: Mélange Cafe & Lounge Items (70 items) ──
 
   // The Real Sandwich (7 items)
   const idSand1 = insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Holly Molly Blueberry', description: 'A delicious combination of blueberry lime & cheese', price: 240, is_veg: 1, sort_order: 1 });
