@@ -21,10 +21,23 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .map(o => o.trim());
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function(origin, callback) {
     // Allow requests with no origin (Postman, mobile apps, curl)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    const allowed = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+      .split(',')
+      .map(o => o.trim());
+    
+    // Also always allow Vercel preview URLs
+    if (
+      allowed.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin === 'https://cafe-software.vercel.app'
+    ) {
+      return callback(null, true);
+    }
+    
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true
