@@ -15,8 +15,8 @@ const placeOrder = (req, res, next) => {
   try {
     const { cafe_slug, table_number, items, customer_note } = req.body;
 
-    if (!cafe_slug || !table_number || !items || !items.length) {
-      return res.status(400).json({ error: 'cafe_slug, table_number, and items are required.' });
+    if (!cafe_slug || !table_number) {
+      return res.status(400).json({ error: 'cafe_slug and table_number are required.' });
     }
 
     const cafe = db.prepare(
@@ -24,33 +24,75 @@ const placeOrder = (req, res, next) => {
     ).get(cafe_slug);
     if (!cafe) return res.status(404).json({ error: 'Cafe not found.' });
 
-    // Validate all item IDs belong to this cafe and are available
-    const itemIds = items.map(i => i.item_id);
-    const placeholders = itemIds.map(() => '?').join(', ');
-    const dbItems = db.prepare(`
-      SELECT id, name, price FROM items
-      WHERE id IN (${placeholders}) AND cafe_id = ? AND is_available = 1
-    `).all(...itemIds, cafe.id);
+    // Check if there is an active session for this table
+    const session = db.prepare(`
+      SELECT id FROM table_sessions
+      WHERE cafe_id = ? AND table_number = ? AND status = 'active'
+    `).get(cafe.id, table_number);
 
-    if (dbItems.length !== itemIds.length) {
-      return res.status(400).json({
-        error: 'One or more items are unavailable or do not belong to this cafe.'
+    let orderLines = [];
+    let total_amount = 0;
+
+    if (session) {
+      // Pull items from session cart
+      const sessionItems = db.prepare(`
+        SELECT item_id, item_name, item_price, quantity
+        FROM session_cart_items
+        WHERE session_id = ?
+      `).all(session.id);
+
+      if (!sessionItems.length) {
+        return res.status(400).json({ error: 'Shared table cart is empty.' });
+      }
+
+      // Validate session items are still active and available in items table
+      const itemIds = sessionItems.map(i => i.item_id);
+      const placeholders = itemIds.map(() => '?').join(', ');
+      const dbItems = db.prepare(`
+        SELECT id FROM items
+        WHERE id IN (${placeholders}) AND cafe_id = ? AND is_available = 1
+      `).all(...itemIds, cafe.id);
+
+      if (dbItems.length !== itemIds.length) {
+        return res.status(400).json({
+          error: 'One or more items in the shared cart are no longer available.'
+        });
+      }
+
+      orderLines = sessionItems.map(({ item_id, item_name, item_price, quantity }) => {
+        const subtotal = item_price * quantity;
+        total_amount += subtotal;
+        return { item_id, item_name, item_price, quantity, subtotal };
+      });
+    } else {
+      // Fallback: standard request-sent items
+      if (!items || !items.length) {
+        return res.status(400).json({ error: 'items are required.' });
+      }
+
+      const itemIds = items.map(i => i.item_id);
+      const placeholders = itemIds.map(() => '?').join(', ');
+      const dbItems = db.prepare(`
+        SELECT id, name, price FROM items
+        WHERE id IN (${placeholders}) AND cafe_id = ? AND is_available = 1
+      `).all(...itemIds, cafe.id);
+
+      if (dbItems.length !== itemIds.length) {
+        return res.status(400).json({
+          error: 'One or more items are unavailable or do not belong to this cafe.'
+        });
+      }
+
+      const itemMap = Object.fromEntries(dbItems.map(i => [i.id, i]));
+      orderLines = items.map(({ item_id, quantity }) => {
+        const dbItem = itemMap[item_id];
+        const subtotal = dbItem.price * quantity;
+        total_amount += subtotal;
+        return { item_id, item_name: dbItem.name, item_price: dbItem.price, quantity, subtotal };
       });
     }
 
-    // Build a lookup map for quick price retrieval
-    const itemMap = Object.fromEntries(dbItems.map(i => [i.id, i]));
-
-    // Calculate total server-side — never trust client-sent prices
-    let total_amount = 0;
-    const orderLines = items.map(({ item_id, quantity }) => {
-      const dbItem = itemMap[item_id];
-      const subtotal = dbItem.price * quantity;
-      total_amount += subtotal;
-      return { item_id, item_name: dbItem.name, item_price: dbItem.price, quantity, subtotal };
-    });
-
-    // Wrap order + line items in a single transaction — both succeed or both fail
+    // Wrap order + line items in a single transaction
     const createOrder = db.transaction(() => {
       const order = db.prepare(`
         INSERT INTO orders (cafe_id, table_number, total_amount, customer_note)
@@ -67,6 +109,15 @@ const placeOrder = (req, res, next) => {
       `);
       for (const line of orderLines) {
         insertLine.run({ cafe_id: cafe.id, order_id: order.lastInsertRowid, ...line });
+      }
+
+      // Close the active table session if one was used
+      if (session) {
+        db.prepare(`
+          UPDATE table_sessions
+          SET status = 'closed'
+          WHERE id = ?
+        `).run(session.id);
       }
 
       return order.lastInsertRowid;

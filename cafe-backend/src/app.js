@@ -9,9 +9,11 @@ const itemRoutes       = require('./routes/items');
 const categoryRoutes   = require('./routes/categories');
 const orderRoutes      = require('./routes/orders');
 const menuRoutes       = require('./routes/menu');
+const tableSessionRoutes = require('./routes/tableSessions');
 const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
+
 
 // ── CORS ──────────────────────────────────────────────────────────────────
 // In production, only allow requests from your Vercel frontend.
@@ -54,11 +56,12 @@ app.get('/health', (req, res) => {
 });
 
 // ── ROUTES ────────────────────────────────────────────────────────────────
-app.use('/api/auth',        authRoutes);
-app.use('/api/items',       itemRoutes);
-app.use('/api/categories',  categoryRoutes);
-app.use('/api/orders',      orderRoutes);
-app.use('/api/menu',        menuRoutes);
+app.use('/api/auth',          authRoutes);
+app.use('/api/items',         itemRoutes);
+app.use('/api/categories',    categoryRoutes);
+app.use('/api/orders',        orderRoutes);
+app.use('/api/menu',          menuRoutes);
+app.use('/api/table-session', tableSessionRoutes);
 
 // ── 404 HANDLER ───────────────────────────────────────────────────────────
 app.use((req, res) => {

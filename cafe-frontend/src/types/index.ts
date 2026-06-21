@@ -40,6 +40,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   is_veg: 0 | 1;
+  added_by_device?: string;
 }
 
 export interface Cart {

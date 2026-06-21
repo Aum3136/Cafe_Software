@@ -150,6 +150,44 @@ const createTables = db.transaction(() => {
       ON order_items(cafe_id, item_id);
   `);
 
+  // ── 6. TABLE_SESSIONS ──────────────────────────────────────────────────────
+  // Tracks active customer sessions per table.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS table_sessions (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      cafe_id       INTEGER NOT NULL REFERENCES cafes(id) ON DELETE CASCADE,
+      table_number  TEXT    NOT NULL,
+      status        TEXT    NOT NULL DEFAULT 'active'
+                    CHECK(status IN ('active', 'closed')),
+      created_at    INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    -- Ensure only one active session exists per table at any given time for isolation
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_active_table_session
+      ON table_sessions(cafe_id, table_number)
+      WHERE status = 'active';
+  `);
+
+  // ── 7. SESSION_CART_ITEMS ──────────────────────────────────────────────────
+  // Shared cart items associated with active table sessions.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS session_cart_items (
+      id                INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id        INTEGER NOT NULL REFERENCES table_sessions(id) ON DELETE CASCADE,
+      item_id           INTEGER NOT NULL REFERENCES items(id) ON DELETE RESTRICT,
+      item_name         TEXT    NOT NULL,
+      item_price        REAL    NOT NULL,
+      quantity          INTEGER NOT NULL CHECK(quantity > 0),
+      added_by_device   TEXT    NOT NULL,
+      added_at          INTEGER NOT NULL DEFAULT (unixepoch()),
+
+      UNIQUE(session_id, item_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_session_cart_items_session
+      ON session_cart_items(session_id);
+  `);
+
 });
 
 // Run schema creation
