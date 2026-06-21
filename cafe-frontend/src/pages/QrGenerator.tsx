@@ -38,13 +38,10 @@ export function QrGenerator() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4">
-      <div className="bg-surface rounded-2xl shadow-card border border-line p-6 w-full max-w-md space-y-6">
+      <div className="bg-surface rounded-lg shadow-card border border-line p-6 w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="w-12 h-12 bg-saffron-100 rounded-full flex items-center justify-center mx-auto mb-3 text-saffron-600 text-2xl">
-            📱
-          </div>
-          <h1 className="text-lg font-bold text-ink">QR Code Generator</h1>
+          <h1 className="text-lg font-bold text-ink font-serif">QR Code Generator</h1>
           <p className="text-xs text-muted mt-1">
             Generate printable QR codes for tables.
           </p>
@@ -62,7 +59,7 @@ export function QrGenerator() {
               value={cafeSlug}
               onChange={(e) => setCafeSlug(e.target.value)}
               placeholder="e.g. chai-corner"
-              className="w-full border border-line rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+              className="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
             />
           </div>
 
@@ -76,13 +73,13 @@ export function QrGenerator() {
               value={tableId}
               onChange={(e) => setTableId(e.target.value)}
               placeholder="e.g. 4, Table A, Counter"
-              className="w-full border border-line rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+              className="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
             />
           </div>
         </div>
 
         {/* Preview URL */}
-        <div className="bg-canvas border border-line rounded-xl p-3 text-center">
+        <div className="bg-canvas border border-line rounded-lg p-3 text-center">
           <p className="text-[10px] text-muted font-bold tracking-wide uppercase mb-1">Target URL</p>
           <a
             href={targetUrl}
@@ -101,11 +98,11 @@ export function QrGenerator() {
           )}
 
           {qrUrl ? (
-            <div className="relative border-2 border-line rounded-2xl overflow-hidden p-2 bg-white shadow-sm transition-all hover:scale-[1.02] duration-200">
+            <div className="relative border-2 border-line rounded-lg overflow-hidden p-2 bg-white shadow-sm transition-all hover:scale-[1.02] duration-200">
               <img src={qrUrl} alt="Generated QR Code" className="w-48 h-48 object-contain" />
             </div>
           ) : (
-            <div className="w-48 h-48 border border-dashed border-ghost rounded-2xl flex items-center justify-center text-ghost text-xs text-center p-4">
+            <div className="w-48 h-48 border border-dashed border-ghost rounded-lg flex items-center justify-center text-ghost text-xs text-center p-4">
               Enter both cafe slug and table number to view QR.
             </div>
           )}
@@ -117,9 +114,9 @@ export function QrGenerator() {
             <a
               href={qrUrl}
               download={`qr-${cafeSlug}-table-${tableId}.png`}
-              className="w-full inline-flex items-center justify-center bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white font-semibold rounded-xl py-3 shadow-md transition-all text-sm gap-2"
+              className="w-full inline-flex items-center justify-center bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white font-semibold rounded-lg py-3 shadow-md transition-all text-sm gap-2"
             >
-              📥 Download PNG
+              Download PNG
             </a>
           </div>
         )}

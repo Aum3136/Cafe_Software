@@ -165,13 +165,10 @@ export function OwnerOrders() {
   if (!token) {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4">
-        <div className="bg-surface rounded-2xl shadow-card border border-line p-6 w-full max-w-sm space-y-6">
+        <div className="bg-surface rounded-lg shadow-card border border-line p-6 w-full max-w-sm space-y-6">
           {/* Header */}
           <div className="text-center">
-            <div className="w-12 h-12 bg-saffron-100 rounded-full flex items-center justify-center mx-auto mb-3 text-saffron-600 text-2xl">
-              🔑
-            </div>
-            <h1 className="text-lg font-bold text-ink">Owner Dashboard</h1>
+            <h1 className="text-lg font-bold text-ink font-serif">Owner Dashboard</h1>
             <p className="text-xs text-muted mt-1">
               Sign in to access your kitchen queue.
             </p>
@@ -180,7 +177,7 @@ export function OwnerOrders() {
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-4">
             {loginError && (
-              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-xl">
+              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-lg">
                 {loginError}
               </div>
             )}
@@ -196,7 +193,7 @@ export function OwnerOrders() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. rahul@chaicorner.in"
-                className="w-full border border-line rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                className="w-full border border-line rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
               />
             </div>
 
@@ -211,14 +208,14 @@ export function OwnerOrders() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full border border-line rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                className="w-full border border-line rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white font-bold rounded-xl py-3 shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white font-bold rounded-lg py-3 shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isLoggingIn ? 'Signing in...' : 'Sign In'}
             </button>
@@ -233,14 +230,11 @@ export function OwnerOrders() {
     <div className="min-h-screen bg-canvas text-ink flex flex-col">
       {/* Sticky Dashboard Header */}
       <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-line shadow-sm px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🍳</span>
-          <div>
-            <h1 className="font-extrabold text-base leading-tight text-ink">Kitchen Queue</h1>
-            <p className="text-[10px] text-saffron-600 font-bold tracking-wider uppercase">
-              {cafeName}
-            </p>
-          </div>
+        <div>
+          <h1 className="font-extrabold text-base leading-tight text-ink font-serif">Kitchen Queue</h1>
+          <p className="text-[10px] text-saffron-600 font-bold tracking-wider uppercase">
+            {cafeName}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -249,11 +243,11 @@ export function OwnerOrders() {
             className="p-1.5 hover:bg-line rounded-lg text-xs font-bold text-muted transition-colors flex items-center gap-1"
             title="Refresh list"
           >
-            🔄 Sync
+            Sync
           </button>
           <button
             onClick={handleLogout}
-            className="bg-line hover:bg-red-50 hover:text-red-600 text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+            className="bg-line hover:bg-red-50 hover:text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
           >
             Sign Out
           </button>
@@ -263,7 +257,7 @@ export function OwnerOrders() {
       {/* Main Grid View */}
       <main className="flex-1 p-6">
         {ordersError && (
-          <div className="max-w-md mx-auto bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-2xl mb-6 text-center">
+          <div className="max-w-md mx-auto bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-lg mb-6 text-center">
             {ordersError}
           </div>
         )}
@@ -271,7 +265,7 @@ export function OwnerOrders() {
         {isLoadingOrders && orders.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="bg-surface border border-line rounded-2xl p-4 h-64 space-y-4">
+              <div key={n} className="bg-surface border border-line rounded-lg p-4 h-64 space-y-4">
                 <div className="flex justify-between">
                   <div className="h-5 bg-line rounded w-1/4" />
                   <div className="h-5 bg-line rounded w-1/3" />
@@ -286,8 +280,7 @@ export function OwnerOrders() {
           </div>
         ) : orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center text-muted">
-            <div className="text-6xl mb-4">💤</div>
-            <h2 className="text-lg font-bold text-ink">No Active Orders</h2>
+            <h2 className="text-lg font-bold text-ink font-serif">No Active Orders</h2>
             <p className="text-sm mt-1 max-w-xs text-muted">
               Any new orders scanned from tables will show up here automatically.
             </p>
@@ -304,14 +297,14 @@ export function OwnerOrders() {
               return (
                 <div
                   key={order.id}
-                  className={`bg-surface rounded-2xl border transition-all duration-200 flex flex-col justify-between shadow-card hover:shadow-md ${
+                  className={`bg-surface rounded-lg border transition-all duration-200 flex flex-col justify-between shadow-card hover:shadow-card-featured ${
                     order.status === 'pending'
                       ? 'border-saffron-400 ring-2 ring-saffron-100'
                       : 'border-line'
                   }`}
                 >
                   {/* Card Header */}
-                  <div className="p-4 border-b border-line flex justify-between items-center bg-canvas/30 rounded-t-2xl">
+                  <div className="p-4 border-b border-line flex justify-between items-center bg-canvas/30 rounded-t-lg">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-black text-ink">
                         Order #{order.id}
@@ -322,7 +315,7 @@ export function OwnerOrders() {
                     </div>
 
                     <span className="text-xs font-semibold text-muted">
-                      🕒 {orderTime}
+                      {orderTime}
                     </span>
                   </div>
 
@@ -331,14 +324,14 @@ export function OwnerOrders() {
                     {/* Table Number Badge */}
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-muted">Table / Origin</span>
-                      <span className="text-sm font-black text-ink bg-line/60 px-3 py-1 rounded-xl">
+                      <span className="text-sm font-black text-ink bg-line/60 px-3 py-1 rounded-lg">
                         {order.table_number.replace(/tbale/i, 'Table')}
                       </span>
                     </div>
 
                     {/* Special Instructions (Alert Box style if present) */}
                     {order.customer_note && (
-                      <div className="bg-saffron-50 border border-saffron-200 rounded-xl p-3">
+                      <div className="bg-saffron-50 border border-saffron-200 rounded-lg p-3">
                         <p className="text-[10px] text-saffron-700 font-bold uppercase tracking-wide">
                           Instructions:
                         </p>
@@ -369,18 +362,18 @@ export function OwnerOrders() {
                   </div>
 
                   {/* Card Footer Actions */}
-                  <div className="p-4 bg-canvas/20 rounded-b-2xl border-t border-line/60 flex gap-2">
+                  <div className="p-4 bg-canvas/20 rounded-b-lg border-t border-line/60 flex gap-2">
                     {order.status === 'pending' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'preparing')}
-                        className="flex-1 bg-saffron-100 hover:bg-saffron-200 active:scale-[0.98] text-saffron-800 text-xs font-bold py-2.5 rounded-xl transition-all"
+                        className="flex-1 bg-saffron-100 hover:bg-saffron-200 active:scale-[0.98] text-saffron-800 text-xs font-bold py-2.5 rounded-lg transition-all"
                       >
                         Accept & Prepare
                       </button>
                     )}
                     <button
                       onClick={() => handleUpdateStatus(order.id, 'completed')}
-                      className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm"
+                      className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-sm"
                     >
                       Mark as Completed
                     </button>

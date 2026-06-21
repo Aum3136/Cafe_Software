@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { VegDot } from '../components/VegDot';
+import { getFallbackImage } from '../components/ItemCard';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -177,21 +178,18 @@ export function MenuManager() {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🍔</span>
-          <h1 className="text-lg font-black text-ink">Menu Manager</h1>
-        </div>
+        <h1 className="text-lg font-black text-ink font-serif">Menu Manager</h1>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-1.5"
+          className="bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-canvas text-xs font-bold px-5 py-2.5 rounded-full shadow-md transition-all flex items-center gap-1.5"
         >
-          <span className="text-sm font-bold leading-none">+</span> Add Item
+          Add Item
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-2xl text-center">
+        <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-lg text-center">
           {error}
         </div>
       )}
@@ -200,8 +198,8 @@ export function MenuManager() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="bg-surface border border-line rounded-2xl p-4 h-36 flex gap-3">
-              <div className="w-16 h-16 bg-line rounded-lg" />
+            <div key={n} className="bg-surface border border-line rounded-lg p-4 h-36 flex gap-3">
+              <div className="w-16 h-16 bg-line rounded-md" />
               <div className="flex-1 space-y-2 py-1">
                 <div className="h-4 bg-line rounded w-3/4" />
                 <div className="h-3 bg-line rounded w-1/2" />
@@ -211,83 +209,85 @@ export function MenuManager() {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-surface rounded-2xl border border-line p-12 text-center text-muted">
-          <div className="text-5xl mb-4">🍽️</div>
+        <div className="bg-surface rounded-lg border border-line p-12 text-center text-muted">
           <h2 className="text-base font-bold text-ink">Your menu is empty</h2>
           <p className="text-xs mt-1 text-muted max-w-xs mx-auto leading-relaxed">
-            Click the **Add Item** button above to create the first dish for your cafe!
+            Click the Add Item button above to create the first dish for your cafe!
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
-            <article
-              key={item.id}
-              className={`bg-surface rounded-2xl border border-line p-4 shadow-card hover:shadow-md transition-all flex gap-3 ${
-                item.is_available === 0 ? 'opacity-65' : ''
-              }`}
-            >
-              {/* Thumbnail Image Placeholder */}
-              <div className="relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-saffron-50 border border-line">
-                {item.image_url ? (
-                  <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl select-none">
-                    {item.is_veg === 1 ? '🥗' : '🍗'}
-                  </div>
-                )}
-              </div>
-
-              {/* Item Info */}
-              <div className="flex-1 min-w-0 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-start gap-1.5">
-                    <VegDot isVeg={item.is_veg === 1} />
-                    <h2 className="text-xs font-bold text-ink truncate leading-tight">
-                      {item.name}
-                    </h2>
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <span className="bg-line text-muted text-[9px] font-bold px-1.5 py-0.5 rounded-full capitalize">
-                      {item.category_name}
-                    </span>
-                    <span className="text-xs font-extrabold text-saffron-600">
-                      ₹{item.price}
-                    </span>
-                  </div>
-                  {item.description && (
-                    <p className="text-[10px] text-muted line-clamp-1 mt-1 leading-normal">
-                      {item.description}
-                    </p>
-                  )}
+          {items.map((item) => {
+            const displayImage = item.image_url || getFallbackImage(item.name, item.category_name);
+            return (
+              <article
+                key={item.id}
+                className={`bg-surface rounded-lg border border-line p-4 shadow-card hover:shadow-card-featured transition-all flex gap-3 ${
+                  item.is_available === 0 ? 'opacity-65' : ''
+                }`}
+              >
+                {/* Thumbnail Image */}
+                <div className="relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-saffron-50 border border-line">
+                  <img 
+                    src={displayImage} 
+                    alt={item.name} 
+                    className="w-full h-full object-cover" 
+                    style={{ filter: 'saturate(1.1) contrast(1.05) sepia(0.08)' }}
+                    loading="lazy"
+                  />
                 </div>
 
-                {/* Available / Sold-Out Toggle Switch */}
-                <div className="flex items-center justify-between mt-3 pt-2 border-t border-line/40">
-                  <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
-                    {item.is_available === 1 ? '🟢 Instock' : '🔴 Sold Out'}
-                  </span>
-                  
-                  {/* Custom Toggle Switch */}
-                  <button
-                    onClick={() => handleToggleAvailable(item.id)}
-                    className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      item.is_available === 1 ? 'bg-veg' : 'bg-ghost'
-                    }`}
-                    role="switch"
-                    aria-checked={item.is_available === 1}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                        item.is_available === 1 ? 'translate-x-4' : 'translate-x-0'
+                {/* Item Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-start gap-1.5">
+                      <VegDot isVeg={item.is_veg === 1} />
+                      <h2 className="text-xs font-bold text-ink truncate leading-tight">
+                        {item.name}
+                      </h2>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="bg-line text-muted text-[9px] font-bold px-1.5 py-0.5 rounded-full capitalize">
+                        {item.category_name}
+                      </span>
+                      <span className="text-xs font-extrabold text-saffron-600">
+                        ₹{item.price}
+                      </span>
+                    </div>
+                    {item.description && (
+                      <p className="text-[10px] text-muted line-clamp-1 mt-1 leading-normal">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Available / Sold-Out Toggle Switch */}
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-line/40">
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
+                      {item.is_available === 1 ? 'Instock' : 'Sold out'}
+                    </span>
+
+                    {/* Custom Toggle Switch */}
+                    <button
+                      onClick={() => handleToggleAvailable(item.id)}
+                      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        item.is_available === 1 ? 'bg-saffron-500' : 'bg-ghost'
                       }`}
-                    />
-                  </button>
+                      role="switch"
+                      aria-checked={item.is_available === 1}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          item.is_available === 1 ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       )}
 
@@ -298,10 +298,10 @@ export function MenuManager() {
           <div onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-ink/40" />
 
           {/* Modal Card */}
-          <div className="bg-surface rounded-2xl shadow-xl border border-line w-full max-w-md p-6 relative z-10 space-y-5 animate-slide-up">
+          <div className="bg-surface rounded-lg shadow-xl border border-line w-full max-w-md p-6 relative z-10 space-y-5 animate-slide-up">
             <div className="flex justify-between items-center border-b border-line pb-3">
-              <h2 className="text-base font-bold text-ink flex items-center gap-1">
-                <span>➕</span> Add New Menu Item
+              <h2 className="text-base font-bold text-ink font-serif">
+                Add New Menu Item
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -312,7 +312,7 @@ export function MenuManager() {
             </div>
 
             {formError && (
-              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-xl">
+              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-lg">
                 {formError}
               </div>
             )}
@@ -329,7 +329,7 @@ export function MenuManager() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Ginger Tea, Paneer Tikka"
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                 />
               </div>
 
@@ -347,7 +347,7 @@ export function MenuManager() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="e.g. 40"
-                    className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                    className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                   />
                 </div>
 
@@ -360,7 +360,7 @@ export function MenuManager() {
                     required
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                    className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                   >
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
@@ -381,12 +381,12 @@ export function MenuManager() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Classic home-style spiced tea with cardamom"
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors resize-none"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors resize-none"
                 />
               </div>
 
               {/* FSSAI Veg / Non-Veg Toggle */}
-              <div className="flex items-center justify-between bg-canvas border border-line rounded-xl p-3">
+              <div className="flex items-center justify-between bg-canvas border border-line rounded-lg p-3">
                 <div>
                   <span className="block text-xs font-bold text-ink">Food Type</span>
                   <span className="text-[10px] text-muted">Identify this dish for FSSAI indicators</span>
@@ -402,7 +402,7 @@ export function MenuManager() {
                         : 'border border-line text-muted bg-white'
                     }`}
                   >
-                    🥗 Veg
+                    Veg
                   </button>
                   <button
                     type="button"
@@ -413,7 +413,7 @@ export function MenuManager() {
                         : 'border border-line text-muted bg-white'
                     }`}
                   >
-                    🍗 Non-Veg
+                    Non-Veg
                   </button>
                 </div>
               </div>
@@ -423,14 +423,14 @@ export function MenuManager() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-xl transition-all"
+                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-md disabled:opacity-50"
+                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-md disabled:opacity-50"
                 >
                   {isSubmitting ? 'Adding...' : 'Create Item'}
                 </button>

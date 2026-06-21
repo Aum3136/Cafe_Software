@@ -219,24 +219,21 @@ export function CategoryManager() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">📁</span>
-          <h1 className="text-lg font-black text-ink">Category Manager</h1>
-        </div>
+        <h1 className="text-lg font-black text-ink font-serif">Category Manager</h1>
 
         <button
           onClick={() => {
             setFormError(null);
             setIsAddOpen(true);
           }}
-          className="bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-1.5"
+          className="bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-md transition-all flex items-center gap-1.5"
         >
-          <span className="text-sm font-bold leading-none">+</span> Add Category
+          Add Category
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-2xl text-center">
+        <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3.5 rounded-lg text-center">
           {error}
         </div>
       )}
@@ -245,7 +242,7 @@ export function CategoryManager() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="bg-surface border border-line rounded-2xl p-4 h-32 space-y-3">
+            <div key={n} className="bg-surface border border-line rounded-lg p-4 h-32 space-y-3">
               <div className="h-4 bg-line rounded w-1/2" />
               <div className="h-3 bg-line rounded w-1/3" />
               <div className="h-4 bg-line rounded w-1/4" />
@@ -253,11 +250,10 @@ export function CategoryManager() {
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="bg-surface rounded-2xl border border-line p-12 text-center text-muted shadow-card">
-          <div className="text-5xl mb-4">📂</div>
+        <div className="bg-surface rounded-lg border border-line p-12 text-center text-muted shadow-card">
           <h2 className="text-base font-bold text-ink">No categories found</h2>
           <p className="text-xs mt-1 text-muted max-w-xs mx-auto leading-relaxed">
-            Click the **Add Category** button above to structure your menu categories!
+            Click the Add Category button above to structure your menu categories!
           </p>
         </div>
       ) : (
@@ -265,7 +261,7 @@ export function CategoryManager() {
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className={`bg-surface rounded-2xl border border-line p-4 shadow-card hover:shadow-md transition-all flex flex-col justify-between h-36 ${
+              className={`bg-surface rounded-lg border border-line p-4 shadow-card hover:shadow-card-featured transition-all flex flex-col justify-between h-36 ${
                 cat.is_active === 0 ? 'opacity-65' : ''
               }`}
             >
@@ -280,14 +276,14 @@ export function CategoryManager() {
                 </div>
                 
                 <p className="text-[10px] text-muted font-bold tracking-wide uppercase mt-2">
-                  💼 {cat.item_count} Item{cat.item_count !== 1 ? 's' : ''}
+                  {cat.item_count} Item{cat.item_count !== 1 ? 's' : ''}
                 </p>
               </div>
 
               {/* Card Footer Actions */}
               <div className="flex justify-between items-center pt-3 border-t border-line/40">
                 <span className="text-[9px] font-bold tracking-wider uppercase">
-                  {cat.is_active === 1 ? '🟢 Active' : '🔴 Inactive'}
+                  {cat.is_active === 1 ? 'Active' : 'Inactive'}
                 </span>
 
                 <div className="flex gap-1.5">
@@ -296,14 +292,14 @@ export function CategoryManager() {
                     className="p-1.5 hover:bg-canvas text-saffron-600 rounded-lg text-xs font-bold transition-all border border-line"
                     title="Edit category"
                   >
-                    ✏️ Edit
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDeleteCategory(cat)}
                     className="p-1.5 hover:bg-red-50 text-red-500 rounded-lg text-xs font-bold transition-all border border-line"
                     title="Delete category"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                 </div>
               </div>
@@ -317,10 +313,10 @@ export function CategoryManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setIsAddOpen(false)} className="absolute inset-0 bg-ink/40" />
 
-          <div className="bg-surface rounded-2xl shadow-xl border border-line w-full max-w-sm p-6 relative z-10 space-y-5 animate-slide-up">
+          <div className="bg-surface rounded-lg shadow-xl border border-line w-full max-w-sm p-6 relative z-10 space-y-5 animate-slide-up">
             <div className="flex justify-between items-center border-b border-line pb-3">
-              <h2 className="text-base font-bold text-ink flex items-center gap-1">
-                <span>➕</span> Add Menu Category
+              <h2 className="text-base font-bold text-ink font-serif">
+                Add Menu Category
               </h2>
               <button
                 onClick={() => setIsAddOpen(false)}
@@ -331,7 +327,7 @@ export function CategoryManager() {
             </div>
 
             {formError && (
-              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-xl">
+              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-lg">
                 {formError}
               </div>
             )}
@@ -348,7 +344,7 @@ export function CategoryManager() {
                   value={addName}
                   onChange={(e) => setAddName(e.target.value)}
                   placeholder="e.g. Desserts, Pizza, Main Course"
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                 />
               </div>
 
@@ -363,7 +359,7 @@ export function CategoryManager() {
                   value={addSortOrder}
                   onChange={(e) => setAddSortOrder(e.target.value)}
                   placeholder="e.g. 0, 1, 2"
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                 />
               </div>
 
@@ -371,14 +367,14 @@ export function CategoryManager() {
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-xl transition-all"
+                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-md disabled:opacity-50"
+                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-md disabled:opacity-50"
                 >
                   {isSubmitting ? 'Adding...' : 'Create Category'}
                 </button>
@@ -393,10 +389,10 @@ export function CategoryManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setIsEditOpen(false)} className="absolute inset-0 bg-ink/40" />
 
-          <div className="bg-surface rounded-2xl shadow-xl border border-line w-full max-w-sm p-6 relative z-10 space-y-5 animate-slide-up">
+          <div className="bg-surface rounded-lg shadow-xl border border-line w-full max-w-sm p-6 relative z-10 space-y-5 animate-slide-up">
             <div className="flex justify-between items-center border-b border-line pb-3">
-              <h2 className="text-base font-bold text-ink flex items-center gap-1">
-                <span>✏️</span> Edit Menu Category
+              <h2 className="text-base font-bold text-ink font-serif">
+                Edit Menu Category
               </h2>
               <button
                 onClick={() => setIsEditOpen(false)}
@@ -407,7 +403,7 @@ export function CategoryManager() {
             </div>
 
             {formError && (
-              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-xl">
+              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-lg">
                 {formError}
               </div>
             )}
@@ -423,7 +419,7 @@ export function CategoryManager() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                 />
               </div>
 
@@ -437,12 +433,12 @@ export function CategoryManager() {
                   required
                   value={editSortOrder}
                   onChange={(e) => setEditSortOrder(e.target.value)}
-                  className="w-full border border-line rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
                 />
               </div>
 
               {/* Active Toggle Switch */}
-              <div className="flex items-center justify-between bg-canvas border border-line rounded-xl p-3">
+              <div className="flex items-center justify-between bg-canvas border border-line rounded-lg p-3">
                 <div>
                   <span className="block text-xs font-bold text-ink">Status</span>
                   <span className="text-[10px] text-muted">Toggle category visibility for customers</span>
@@ -452,7 +448,7 @@ export function CategoryManager() {
                   type="button"
                   onClick={() => setEditIsActive(!editIsActive)}
                   className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    editIsActive ? 'bg-veg' : 'bg-ghost'
+                    editIsActive ? 'bg-saffron-500' : 'bg-ghost'
                   }`}
                   role="switch"
                   aria-checked={editIsActive}
@@ -470,14 +466,14 @@ export function CategoryManager() {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-xl transition-all"
+                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-md disabled:opacity-50"
+                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-md disabled:opacity-50"
                 >
                   {isSubmitting ? 'Updating...' : 'Save Changes'}
                 </button>
@@ -492,23 +488,20 @@ export function CategoryManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setDeletionWarning(null)} className="absolute inset-0 bg-ink/40" />
 
-          <div className="bg-surface rounded-2xl shadow-xl border border-line w-full max-w-sm p-6 relative z-10 text-center space-y-4 animate-slide-up">
-            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto text-2xl">
-              ⚠️
-            </div>
+          <div className="bg-surface rounded-lg shadow-xl border border-line w-full max-w-sm p-6 relative z-10 text-center space-y-4 animate-slide-up">
             <div>
-              <h2 className="text-sm font-bold text-ink">Cannot Delete Category</h2>
+              <h2 className="text-sm font-bold text-ink font-serif">Cannot Delete Category</h2>
               <p className="text-xs text-muted mt-2 leading-relaxed">
-                The category **"{deletionWarning.name}"** currently contains **{deletionWarning.count} menu item{deletionWarning.count !== 1 ? 's' : ''}**.
+                The category "{deletionWarning.name}" currently contains {deletionWarning.count} menu item{deletionWarning.count !== 1 ? 's' : ''}.
               </p>
-              <p className="text-[10px] text-red-500 font-semibold mt-3 bg-red-50 border border-red-100 p-2.5 rounded-xl">
-                Please reassign or delete these items in the **Menu Manager** first before deleting the category.
+              <p className="text-[10px] text-red-500 font-semibold mt-3 bg-red-50 border border-red-100 p-2.5 rounded-lg">
+                Please reassign or delete these items in the Menu Manager first before deleting the category.
               </p>
             </div>
 
             <button
               onClick={() => setDeletionWarning(null)}
-              className="w-full bg-ink hover:bg-ink/90 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm"
+              className="w-full bg-ink hover:bg-ink/90 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-sm"
             >
               Okay, I understand
             </button>
