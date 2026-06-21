@@ -149,20 +149,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // Sidebar navigation links configuration
   const navItems = [
-    { name: 'Active Orders', path: '/owner/orders' },
-    { name: 'Menu Manager', path: '/dashboard/menu' },
-    { name: 'Category Manager', path: '/dashboard/categories' },
-    { name: 'QR Generator', path: '/owner/qr' },
-    { name: 'Reports', path: '/dashboard/reports' },
+    { name: 'Active Orders', path: '/owner/orders', icon: '🍳' },
+    { name: 'Menu Manager', path: '/dashboard/menu', icon: '🍔' },
+    { name: 'Category Manager', path: '/dashboard/categories', icon: '📁' },
+    { name: 'QR Generator', path: '/owner/qr', icon: '📱' },
+    { name: 'Reports', path: '/dashboard/reports', icon: '📊' },
   ];
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row relative">
       {/* ── MOBILE NAV HEADER ── */}
       <div className="md:hidden bg-surface border-b border-line px-4 py-3.5 flex items-center justify-between sticky top-0 z-50">
-        <div>
-          <span className="font-extrabold text-sm text-ink block leading-none font-serif">{cafeName}</span>
-          <span className="text-[9px] font-bold text-saffron-500 tracking-wider uppercase">Owner Panel</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xl">☕</span>
+          <div>
+            <span className="font-extrabold text-sm text-ink block leading-none">{cafeName}</span>
+            <span className="text-[9px] font-bold text-saffron-600 tracking-wider uppercase">Owner Panel</span>
+          </div>
         </div>
 
         <button
@@ -177,20 +180,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* ── SIDEBAR DRAWER (Responsive) ── */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-64 bg-canvas text-ink flex flex-col justify-between p-5 border-r border-line
+          fixed inset-y-0 left-0 z-40 w-64 bg-ink text-white flex flex-col justify-between p-5 border-r border-ink/20
           transform transition-transform duration-300 ease-in-out md:relative md:transform-none
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
         <div className="space-y-6">
           {/* Cafe Header Profile */}
-          <div className="hidden md:flex items-center gap-3 border-b border-line pb-4 mb-4">
-            <div className="w-9 h-9 rounded-full bg-saffron-500 flex items-center justify-center font-black text-canvas text-base">
-              {cafeName?.[0] ?? 'C'}
+          <div className="hidden md:flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
+            <div className="w-9 h-9 rounded-full bg-saffron-500 flex items-center justify-center font-black text-white text-base">
+              {cafeName?.[0] ?? '☕'}
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-sm text-ink truncate leading-tight font-serif">{cafeName}</h2>
-              <span className="text-[9px] font-bold text-saffron-500 tracking-wider uppercase block">Owner Panel</span>
+              <h2 className="font-bold text-sm text-white truncate leading-tight">{cafeName}</h2>
+              <span className="text-[9px] font-bold text-saffron-400 tracking-wider uppercase block">Owner Panel</span>
             </div>
           </div>
 
@@ -203,14 +206,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`
-                    w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-left text-xs font-semibold transition-all duration-150
+                    w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-xs font-semibold transition-all duration-150
                     ${
                       isActive
-                        ? 'bg-saffron-500 text-canvas shadow-md'
-                        : 'text-muted hover:bg-saffron-50/50 hover:text-ink'
+                        ? 'bg-saffron-500 text-white shadow-md'
+                        : 'text-white/75 hover:bg-white/5 hover:text-white'
                     }
                   `}
                 >
+                  <span className="text-sm">{item.icon}</span>
                   {item.name}
                 </button>
               );
@@ -219,11 +223,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Logout button at bottom */}
-        <div className="border-t border-line pt-4">
+        <div className="border-t border-white/10 pt-4">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-left text-xs font-semibold text-muted hover:text-red-600 hover:bg-red-50 transition-all"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-xs font-semibold text-white/60 hover:text-red-400 hover:bg-white/5 transition-all"
           >
+            <span>🚪</span>
             Sign Out
           </button>
         </div>
