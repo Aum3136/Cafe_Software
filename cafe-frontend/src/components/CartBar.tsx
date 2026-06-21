@@ -26,12 +26,12 @@ export function CartBar({ onCheckout }: CartBarProps) {
         onClick={onCheckout}
         className="
           w-full flex items-center justify-between
-          bg-ink text-white rounded-xl px-4 py-3.5
+          bg-ink text-white rounded-lg px-4 py-3.5
           shadow-cart pointer-events-auto
           active:scale-[0.98] transition-transform duration-100
         "
         aria-live="polite"
-        aria-label={`View cart — ${totalItems} item${totalItems > 1 ? 's' : ''}, ₹${totalAmount.toFixed(0)} total`}
+        aria-label={`See your order — ${totalItems} item${totalItems > 1 ? 's' : ''}, ₹${totalAmount.toFixed(0)} total`}
       >
         <span className="flex items-center gap-2">
           {/* Cart item count badge */}
@@ -45,7 +45,7 @@ export function CartBar({ onCheckout }: CartBarProps) {
 
         <span className="flex items-center gap-2">
           <span className="text-sm font-semibold">₹{totalAmount.toFixed(0)}</span>
-          <span className="text-sm text-white/70">→ View Cart</span>
+          <span className="text-sm text-white/70">See your order →</span>
         </span>
       </button>
     </div>

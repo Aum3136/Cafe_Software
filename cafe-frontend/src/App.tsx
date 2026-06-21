@@ -8,6 +8,8 @@ import { MenuManager } from './pages/MenuManager';
 import { CategoryManager } from './pages/CategoryManager';
 import { Reports } from './pages/Reports';
 import { DashboardLayout } from './components/DashboardLayout';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 
 /*
   Route map (Week 2):
@@ -42,6 +44,12 @@ export default function App() {
 
           {/* Checkout page */}
           <Route path="/checkout/:cafeSlug" element={<CheckoutPage />} />
+
+          {/* Owner Forgot Password page */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* Owner Reset Password page */}
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Owner QR Code Generator */}
           <Route path="/owner/qr" element={<DashboardLayout><QrGenerator /></DashboardLayout>} />

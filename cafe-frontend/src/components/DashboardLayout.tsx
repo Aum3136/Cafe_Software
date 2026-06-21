@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -115,9 +115,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-bold text-ink mb-1">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label htmlFor="password" className="block text-xs font-bold text-ink">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-saffron-600 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"

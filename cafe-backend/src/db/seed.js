@@ -75,112 +75,117 @@ const seed = db.transaction(() => {
   const catCoffee2       = insertCat.run({ cafe_id: c2, name: 'Coffee',                 sort_order: 1 });
   const catSnacks2       = insertCat.run({ cafe_id: c2, name: 'Snacks',                 sort_order: 2 });
 
-  // ── 3. Items ────────────────────────────────────────────────────────────────
+  // Unsplash CDN stable food photography URLs
+  const imgChai = 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&h=400&fit=crop&q=80';
+  const imgSamosa = 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=400&fit=crop&q=80';
+  const imgColdCoffee = 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=400&h=400&fit=crop&q=80';
+  const imgSandwich = 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=400&fit=crop&q=80';
+  const imgLemonade = 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop&q=80';
+
   const insertItem = db.prepare(`
-    INSERT INTO items (cafe_id, category_id, name, description, price, is_veg, sort_order)
-    VALUES (@cafe_id, @category_id, @name, @description, @price, @is_veg, @sort_order)
+    INSERT INTO items (cafe_id, category_id, name, description, price, image_url, is_veg, sort_order)
+    VALUES (@cafe_id, @category_id, @name, @description, @price, @image_url, @is_veg, @sort_order)
   `);
 
   // ── Cafe 1: Mélange Cafe & Lounge Items (70 items) ──
 
   // The Real Sandwich (7 items)
-  const idSand1 = insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Holly Molly Blueberry', description: 'A delicious combination of blueberry lime & cheese', price: 240, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Mushroom', description: 'Every bite loaded with cheese mushroom & mayo', price: 200, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Classic Italian', description: 'The classic Italian combination of tomato basil cheese', price: 200, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Tandoori Paneer', description: 'Delightful combination of delicious mayo and tangy paneer', price: 180, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Trinity Cheese Sandwich', description: 'The classic 3 cheese grill sandwich', price: 200, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Nutella Cheese', description: 'There are very few things as heavenly as nutella and cheese', price: 220, is_veg: 1, sort_order: 6 });
-  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Nutella Ba - Na - Na', description: 'Nutella and banana are something that go hand in hand', price: 200, is_veg: 1, sort_order: 7 });
+  const idSand1 = insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Holly Molly Blueberry', description: 'Blueberry, lime & cheese grill — sweet, tangy, ekdum unique.', price: 240, image_url: imgSandwich, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Mushroom', description: 'Mushrooms and loaded cheese, toasted till super melty.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Classic Italian', description: 'Tomato, fresh basil, and gooey cheese. A simple Italian love affair.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Tandoori Paneer', description: 'Tandoori-spiced paneer with creamy mayo. Chatpata and filling!', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Trinity Cheese Sandwich', description: 'Triple cheese goodness. Crispy on the outside, cheesy inside.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Nutella Cheese', description: 'Nutella meets melted cheese. Sounds crazy, tastes like heaven!', price: 220, image_url: imgSandwich, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Nutella Ba - Na - Na', description: 'Nutella and fresh banana. The ultimate sweet comfort food.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 7 });
 
   // On - Bread (4 items)
-  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The American One', description: 'Baked bean and cheese on toasts', price: 180, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'Loaded Mushroom', description: 'Creamy mushroom-garlic on toast', price: 180, is_veg: 1, sort_order: 2 });
-  const idGarlicBread = insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Classic Cheese & Garlic', description: 'Delicious cheesy garlic bread', price: 180, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Trinity Cheese', description: 'A combination of 3 exquisite cheese spread on crispy toast', price: 180, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The American One', description: 'Warm baked beans and cheese on toast. Comforting American classic.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'Loaded Mushroom', description: 'Creamy garlic mushrooms piled high on toasted bread.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 2 });
+  const idGarlicBread = insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Classic Cheese & Garlic', description: 'Melted cheese and fresh garlic butter on crispy toast. Hard to resist!', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Trinity Cheese', description: 'Our signature three-cheese spread on hot crispy toast.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 4 });
 
   // Pizza (1 item)
-  insertItem.run({ cafe_id: c1, category_id: catPizza.lastInsertRowid, name: 'Margherita Pizza', description: 'Classic mozzarella and tomato base pizza (10 inches)', price: 220, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catPizza.lastInsertRowid, name: 'Margherita Pizza', description: 'Classic mozzarella and tomato base. Simple, fresh, ekdum perfect.', price: 220, image_url: imgSandwich, is_veg: 1, sort_order: 1 });
 
   // Sides (7 items)
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Peri Peri Fried Banana', description: 'Crispy fried banana with spicy peri-peri seasoning', price: 160, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Classic Fries', description: 'Golden salted french fries', price: 140, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Butter Garlic Fries', description: 'Tossed in garlic butter and parsley', price: 180, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Peri Peri Fries', description: 'Spicy peri-peri seasoned fries', price: 160, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Fully Loaded Fries', description: 'Fries topped with cheese, jalapenos and house sauce', price: 200, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Fully Loaded Nachos', description: 'Crispy nachos loaded with cheese sauce, salsa and sour cream', price: 240, is_veg: 1, sort_order: 6 });
-  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Classic Potato Wedges', description: 'Crispy seasoned potato wedges', price: 160, is_veg: 1, sort_order: 7 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Peri Peri Fried Banana', description: 'Sweet banana slices fried crispy with a spicy peri-peri twist.', price: 160, image_url: imgSamosa, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Classic Fries', description: 'Crispy, golden potato fries. Simple, salted, and always hot.', price: 140, image_url: imgSamosa, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Butter Garlic Fries', description: 'Golden fries tossed in warm garlic butter. Super aromatic, bhai.', price: 180, image_url: imgSamosa, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Peri Peri Fries', description: 'Fries dusted with our special spicy, tangy peri-peri masala.', price: 160, image_url: imgSamosa, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Fully Loaded Fries', description: 'Fries smothered in hot cheese sauce, jalapeños, and secret seasoning.', price: 200, image_url: imgSamosa, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Fully Loaded Nachos', description: 'Crispy nachos loaded with warm cheese, salsa, and sour cream.', price: 240, image_url: imgSamosa, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catSides.lastInsertRowid, name: 'Classic Potato Wedges', description: 'Crispy seasoned potato wedges, served hot and fresh.', price: 160, image_url: imgSamosa, is_veg: 1, sort_order: 7 });
 
   // Fresh Out of the Oven (5 items)
-  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Apple Pie', description: 'Warm spiced apple filling in a flaky crust', price: 200, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Cinnamon Rolls', description: 'Soft baked cinnamon rolls with sweet cream cheese icing', price: 200, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Sizzling Walnut Brownie', description: 'Fudgy walnut brownie served sizzling with chocolate sauce', price: 220, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Pound Cakes', description: 'Rich buttery sponge cake - ask for today\'s flavor', price: 180, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Tea Cakes', description: 'Classic tea-time cake - ask for today\'s flavor', price: 180, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Apple Pie', description: 'Flaky crust loaded with warm spiced apples. Dadi-approved sweetness.', price: 200, image_url: imgSamosa, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Cinnamon Rolls', description: 'Soft, warm rolls glazed with sweet cream cheese icing.', price: 200, image_url: imgSamosa, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Sizzling Walnut Brownie', description: 'Fudgy brownie served hot and sizzling with warm chocolate fudge.', price: 220, image_url: imgSamosa, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Pound Cakes', description: 'Buttery, rich pound cake slice. Goes best with garam chai.', price: 180, image_url: imgSamosa, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catOven.lastInsertRowid, name: 'Tea Cakes', description: 'Light, fresh tea cake. Baked fresh in our kitchen daily.', price: 180, image_url: imgSamosa, is_veg: 1, sort_order: 5 });
 
   // Hot Brew (18 items)
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso', description: 'Single shot of rich espresso', price: 100, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso Con Panna', description: 'Espresso topped with a dollop of whipped cream', price: 140, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso Affogato', description: 'Espresso shot poured over vanilla ice cream', price: 180, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Macchiato', description: 'Espresso marked with a splash of foamed milk', price: 120, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cappuccino Regular', description: 'Classic espresso with balanced steamed milk and foam', price: 140, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cappuccino Dry', description: 'Espresso with more foam and less steamed milk', price: 140, is_veg: 1, sort_order: 6 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cafe Latte', description: 'Mild espresso coffee with velvety steamed milk', price: 140, is_veg: 1, sort_order: 7 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Nute - Latte', description: 'Creamy latte infused with delicious Nutella chocolate', price: 180, is_veg: 1, sort_order: 8 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cafe Mocha', description: 'Espresso blended with rich chocolate and steamed milk', price: 160, is_veg: 1, sort_order: 9 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Americano', description: 'Espresso shots diluted with hot water', price: 120, is_veg: 1, sort_order: 10 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Honey Trap', description: 'Sweetened hot brew coffee with honey notes', price: 140, is_veg: 1, sort_order: 11 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Irish Coffee', description: 'Hot coffee with rich cream and non-alcoholic Irish flavor', price: 160, is_veg: 1, sort_order: 12 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Gourmet Hot Chocolate', description: 'Thick and rich premium hot chocolate', price: 160, is_veg: 1, sort_order: 13 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Irani Chai', description: 'Slow-brewed sweet milky Hyderabadi-style tea', price: 75, is_veg: 1, sort_order: 14 });
-  const idMasalaChai = insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Masala Chai', description: 'Classic spiced tea with ginger and cardamom', price: 75, is_veg: 1, sort_order: 15 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Green Tea', description: 'Light antioxidant-rich hot green tea', price: 120, is_veg: 1, sort_order: 16 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Maska Bun', description: 'Soft bun loaded with sweet butter spread', price: 60, is_veg: 1, sort_order: 17 });
-  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Giant Chewy Cookies', description: 'Freshly baked giant chocolate chip cookie', price: 80, is_veg: 1, sort_order: 18 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso', description: 'A bold, intense shot of pure espresso. Straight to the point.', price: 100, image_url: imgChai, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso Con Panna', description: 'Bold espresso topped with a dollop of fresh whipped cream.', price: 140, image_url: imgChai, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Espresso Affogato', description: 'Rich espresso shot poured over creamy vanilla ice cream.', price: 180, image_url: imgChai, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Macchiato', description: 'Bold espresso marked with a delicate splash of warm foam.', price: 120, image_url: imgChai, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cappuccino Regular', description: 'Espresso with balanced steamed milk and a beautiful layer of foam.', price: 140, image_url: imgChai, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cappuccino Dry', description: 'More foam, less milk. For the true espresso lovers.', price: 140, image_url: imgChai, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cafe Latte', description: 'Smooth espresso with velvety steamed milk. Mild and comforting.', price: 140, image_url: imgChai, is_veg: 1, sort_order: 7 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Nute - Latte', description: 'Our creamy latte infused with thick, hazelnut Nutella spread.', price: 180, image_url: imgChai, is_veg: 1, sort_order: 8 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Cafe Mocha', description: 'Rich chocolate and bold espresso, topped with silky steamed milk.', price: 160, image_url: imgChai, is_veg: 1, sort_order: 9 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Americano', description: 'Double shot of espresso diluted with hot water. Clean brew.', price: 120, image_url: imgChai, is_veg: 1, sort_order: 10 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Honey Trap', description: 'Bold espresso sweetened with pure, local organic honey.', price: 140, image_url: imgChai, is_veg: 1, sort_order: 11 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Irish Coffee', description: 'A warm coffee treat infused with non-alcoholic Irish cream.', price: 160, image_url: imgChai, is_veg: 1, sort_order: 12 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Gourmet Hot Chocolate', description: 'Thick, rich, and velvety premium chocolate. Warm hug in a mug.', price: 160, image_url: imgChai, is_veg: 1, sort_order: 13 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Irani Chai', description: 'Slow-brewed sweet, milky chai. Nostalgic tapri flavor, pure love.', price: 75, image_url: imgChai, is_veg: 1, sort_order: 14 });
+  const idMasalaChai = insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Masala Chai', description: 'Our tapri-style chai, extra adrak, no shortcuts.', price: 75, image_url: imgChai, is_veg: 1, sort_order: 15 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Green Tea', description: 'Light, clean, and antioxidant-rich green tea to refresh you.', price: 120, image_url: imgChai, is_veg: 1, sort_order: 16 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Maska Bun', description: 'Soft bun sliced and loaded with sweet maska. Classic chai partner!', price: 60, image_url: imgChai, is_veg: 1, sort_order: 17 });
+  insertItem.run({ cafe_id: c1, category_id: catHotBrew.lastInsertRowid, name: 'Giant Chewy Cookies', description: 'Freshly baked giant chocolate chip cookie. Soft and chewy.', price: 80, image_url: imgChai, is_veg: 1, sort_order: 18 });
 
   // Cold Brew (6 items)
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Latte', description: 'Chilled espresso with fresh cold milk over ice', price: 160, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Mocha', description: 'Chilled espresso with chocolate syrup and milk', price: 200, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Americano', description: 'Chilled double shot of espresso diluted with cold water', price: 140, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Honey Trap Cold Brew', description: 'Slow-steeped cold brew sweetened with premium honey', price: 140, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Coffee on the Rocks', description: 'Strong unsweetened cold coffee poured over clean ice', price: 220, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Vanilla Sweet Cream', description: 'Cold brew topped with vanilla sweet cream', price: 220, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Latte', description: 'Chilled espresso and cold milk served over ice.', price: 160, image_url: imgColdCoffee, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Mocha', description: 'Chilled espresso, rich chocolate, and cold milk over ice.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Iced Americano', description: 'Espresso double shot served chilled over ice. Ekdum refreshing.', price: 140, image_url: imgColdCoffee, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Honey Trap Cold Brew', description: 'Slow-steeped cold brew with a sweet kiss of pure honey.', price: 140, image_url: imgColdCoffee, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Coffee on the Rocks', description: 'Bold, unsweetened cold brew poured over clean, solid ice.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catColdBrew.lastInsertRowid, name: 'Vanilla Sweet Cream', description: 'Smooth cold brew topped with house-made vanilla sweet cream.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 6 });
 
   // Coolers (6 items)
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Iced Tea', description: 'Refreshing iced tea - choose Lemon, Mint, Peach, or Strawberry', price: 180, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Dew Drop Lemon', description: 'Chilled minty lemon cooler', price: 180, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Morning Lemon Mint', description: 'Invigorating fresh lemon and mint refresher', price: 180, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Virgin Vodka Green Apple', description: 'Green apple cooler with clean mocktail flavors', price: 180, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Indian Summer Peach', description: 'Sweet peach mocktail blended with lime and soda', price: 180, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Berry Blitz Strawberry', description: 'Fruity strawberry mocktail blitzed with mint', price: 180, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Iced Tea', description: 'Refreshing iced tea. Pick Lemon, Mint, Peach, or Strawberry.', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Dew Drop Lemon', description: 'Chilled lemon cooler with a fresh splash of mint.', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Morning Lemon Mint', description: 'Zesty lemon and fresh mint. The ultimate morning booster!', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Virgin Vodka Green Apple', description: 'Crisp green apple cooler. Sweet, sour, and ekdum chilled.', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Indian Summer Peach', description: 'Sweet peach blended with fresh lime and bubbly soda.', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catCoolers.lastInsertRowid, name: 'Berry Blitz Strawberry', description: 'Fruity strawberry mocktail blitzed with fresh mint leaves.', price: 180, image_url: imgLemonade, is_veg: 1, sort_order: 6 });
 
   // Shakes (8 items)
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Chocolate Fuel', description: 'Double chocolate thick milkshake', price: 200, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Choco - Banana', description: 'Rich chocolate and fresh banana shake', price: 220, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Mighty Kit Kat', description: 'Kit Kat blended chocolate shake with toppings', price: 220, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Oreo - Licious', description: 'Creamy vanilla shake blended with Oreo cookies', price: 200, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Brownie Brownie', description: 'Decadent milkshake blended with chocolate fudge brownie', price: 220, is_veg: 1, sort_order: 5 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Nutella Blast', description: 'Rich premium shake loaded with hazelnut Nutella spread', price: 280, is_veg: 1, sort_order: 6 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Straw - Bana', description: 'Fresh strawberry and sweet banana shake', price: 230, is_veg: 1, sort_order: 7 });
-  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Freaky Ferrero', description: 'Thick shake loaded with Ferrero Rocher chocolates', price: 280, is_veg: 1, sort_order: 8 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Chocolate Fuel', description: 'Double chocolate milkshake, blended thick and creamy.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Choco - Banana', description: 'Creamy milkshake with rich chocolate and fresh banana slices.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Mighty Kit Kat', description: 'Chocolate shake blended with Kit Kat. A child-at-heart treat.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Oreo - Licious', description: 'Thick milkshake blended with crunchy Oreo cookies. A sweet crunch.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Brownie Brownie', description: 'Decadent milkshake blended with chocolate fudge brownie chunks.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 5 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Nutella Blast', description: 'Premium thick shake loaded with rich hazelnut Nutella spread.', price: 280, image_url: imgColdCoffee, is_veg: 1, sort_order: 6 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Straw - Bana', description: 'Sweet strawberries and fresh bananas blended into thick perfection.', price: 230, image_url: imgColdCoffee, is_veg: 1, sort_order: 7 });
+  insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Freaky Ferrero', description: 'Thick milkshake loaded with crunchy Ferrero Rocher chocolates.', price: 280, image_url: imgColdCoffee, is_veg: 1, sort_order: 8 });
 
   // Frappes (5 items)
-  const idColdCoffee = insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Classic Blend Cold Coffee', description: 'Perfectly blended sweet frothy cold coffee', price: 200, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Mocha Frappe', description: 'Blended cold coffee infused with rich chocolate drizzle', price: 220, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Crazy Caramel', description: 'Sweet blended coffee with heavy caramel drizzle', price: 240, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Hazy Hazelnut', description: 'Blended coffee with nutty hazelnut syrup notes', price: 240, is_veg: 1, sort_order: 4 });
-  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Berry Strawberry Mocha', description: 'Strawberry-mocha blended coffee creation', price: 240, is_veg: 1, sort_order: 5 });
+  const idColdCoffee = insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Classic Blend Cold Coffee', description: 'Cold coffee the way Vadodara likes it — thick and sweet.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Mocha Frappe', description: 'Blended cold coffee infused with rich chocolate syrup.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Crazy Caramel', description: 'Sweet blended coffee with a warm caramel drizzle.', price: 240, image_url: imgColdCoffee, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Hazy Hazelnut', description: 'Creamy cold coffee with nutty hazelnut syrup notes.', price: 240, image_url: imgColdCoffee, is_veg: 1, sort_order: 4 });
+  insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Berry Strawberry Mocha', description: 'Unique blend of fresh strawberry and chocolate mocha.', price: 240, image_url: imgColdCoffee, is_veg: 1, sort_order: 5 });
 
   // Sip & Savor (3 items)
-  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Red Bull', description: 'Energy Drink', price: 140, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Ginger Ale', description: 'Carbonated ginger-flavored beverage', price: 140, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Tonic Water', description: 'Classic carbonated mixer', price: 140, is_veg: 1, sort_order: 3 });
-
+  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Red Bull', description: 'Cold energy booster for when you need that extra kick.', price: 140, image_url: imgLemonade, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Ginger Ale', description: 'Bubbly carbonated ginger refreshment, served chilled.', price: 140, image_url: imgLemonade, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c1, category_id: catSipSavor.lastInsertRowid, name: 'Tonic Water', description: 'Classic carbonated mixer. Pure and refreshing.', price: 140, image_url: imgLemonade, is_veg: 1, sort_order: 3 });
 
   // ── Cafe 2: Brew House Items (Keep basic) ──
-  const idEspresso2 = insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Espresso', description: 'Single shot, strong', price: 60, is_veg: 1, sort_order: 1 });
-  insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Cappuccino', description: 'Espresso with steamed milk foam', price: 110, is_veg: 1, sort_order: 2 });
-  insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Cold Brew', description: 'Slow-steeped 12 hours', price: 130, is_veg: 1, sort_order: 3 });
-  insertItem.run({ cafe_id: c2, category_id: catSnacks2.lastInsertRowid,    name: 'Croissant', description: 'Buttery, baked fresh', price: 90, is_veg: 1, sort_order: 1 });
+  const idEspresso2 = insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Espresso', description: 'Bold, pure double shot. Straight to the point.', price: 60, image_url: imgChai, is_veg: 1, sort_order: 1 });
+  insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Cappuccino', description: 'Espresso with rich, hot steamed milk foam.', price: 110, image_url: imgChai, is_veg: 1, sort_order: 2 });
+  insertItem.run({ cafe_id: c2, category_id: catCoffee2.lastInsertRowid, name: 'Cold Brew', description: 'Slow-steeped 12 hours for a super smooth buzz.', price: 130, image_url: imgColdCoffee, is_veg: 1, sort_order: 3 });
+  insertItem.run({ cafe_id: c2, category_id: catSnacks2.lastInsertRowid,    name: 'Croissant', description: 'Buttery, flaky, baked fresh in our oven.', price: 90, image_url: imgSamosa, is_veg: 1, sort_order: 1 });
 
 
   // ── 4. Sample Orders ────────────────────────────────────────────────────────

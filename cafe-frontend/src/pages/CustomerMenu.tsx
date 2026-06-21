@@ -4,6 +4,7 @@ import { VegDot } from '../components/VegDot';
 import { useCart } from '../context/CartContext';
 import type { CafeInfo, MenuItem, MenuCategory } from '../types';
 import { DishExperienceModal } from '../components/DishExperienceModal';
+import { getFallbackImage } from '../components/ItemCard';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -229,6 +230,13 @@ export function CustomerMenu() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col relative pb-28 lg:pb-12">
+      {/* Subtle paper-grain texture overlay */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-50 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
       <div className="w-full max-w-6xl mx-auto px-0 lg:px-6 flex-1 flex flex-col">
         {/* ── HERO BANNER (Non-Sticky) ── */}
         <div className="relative h-60 lg:h-80 w-full bg-ink overflow-hidden flex flex-col justify-end lg:rounded-3xl lg:mt-6 shadow-sm">
@@ -296,7 +304,7 @@ export function CustomerMenu() {
             <div className="flex flex-col gap-1.5">
               <button
                 onClick={() => setActiveCategory('all')}
-                className={`w-full text-left px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-200 ${
+                className={`w-full text-left px-4 py-3 rounded-full text-xs font-bold transition-all duration-200 ${
                   activeCategory === 'all'
                     ? 'bg-saffron-500 text-canvas shadow-md'
                     : 'text-muted hover:bg-white/90 hover:text-ink'
@@ -308,7 +316,7 @@ export function CustomerMenu() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id.toString())}
-                  className={`w-full text-left px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-200 truncate ${
+                  className={`w-full text-left px-4 py-3 rounded-full text-xs font-bold transition-all duration-200 truncate ${
                     activeCategory === cat.id.toString()
                       ? 'bg-saffron-500 text-canvas shadow-md'
                       : 'text-muted hover:bg-white/90 hover:text-ink'
@@ -332,7 +340,7 @@ export function CustomerMenu() {
                     placeholder="Search dishes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white/75 border border-line rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-saffron-400 focus:ring-1 focus:ring-saffron-400 transition-all font-medium placeholder-ghost shadow-sm"
+                    className="w-full bg-white/75 border border-line rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-saffron-400 focus:ring-1 focus:ring-saffron-400 transition-all font-medium placeholder-ghost shadow-sm"
                   />
                   {searchQuery && (
                     <button
@@ -347,7 +355,7 @@ export function CustomerMenu() {
                 {/* Veg Only Toggle */}
                 <button
                   onClick={() => setVegOnly(!vegOnly)}
-                  className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-bold transition-all shadow-sm ${
+                  className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg border text-xs font-bold transition-all shadow-sm ${
                     vegOnly
                       ? 'bg-veg/10 border-veg text-veg'
                       : 'bg-white/75 border-line text-muted hover:border-muted'
@@ -418,28 +426,111 @@ export function CustomerMenu() {
                     </h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {category.items.map((item) => {
+                      {category.items.map((item, index) => {
                         const qty = getQuantity(item.id);
+                        const isFeatured = index === 0;
+                        const displayImage = item.image_url || getFallbackImage(item.name, category.name);
+
+                        if (isFeatured) {
+                          return (
+                            <article
+                              key={item.id}
+                              onClick={() => setSelectedExperienceItem(item)}
+                              className="col-span-1 sm:col-span-2 flex flex-col gap-3.5 bg-white rounded-lg p-4 shadow-card-featured border border-line/25 cursor-pointer relative overflow-hidden"
+                            >
+                              {/* Photo container */}
+                              <div className="relative w-full h-48 sm:h-64 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
+                                <img
+                                  src={displayImage}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                  style={{ filter: 'saturate(1.1) contrast(1.05) sepia(0.08)' }}
+                                  loading="lazy"
+                                />
+                              </div>
+
+                              {/* Content Info */}
+                              <div className="flex-1 flex flex-col justify-between">
+                                <div>
+                                  <div className="flex items-start gap-2 mb-1">
+                                    <VegDot isVeg={item.is_veg === 1} />
+                                    <h3 className="text-base font-bold text-ink leading-snug font-sans tracking-tight">
+                                      {item.name}
+                                    </h3>
+                                  </div>
+                                  {item.description && (
+                                    <p className="text-xs text-muted leading-relaxed font-medium mt-1">
+                                      {item.description}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Price & Add to Cart Controls */}
+                                <div className="flex items-center justify-between mt-3.5 pt-1">
+                                  <span className="text-base font-bold text-saffron-600">
+                                    ₹{item.price}
+                                  </span>
+
+                                  {qty === 0 ? (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        addToCart(item);
+                                      }}
+                                      className="px-4 py-1.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold rounded-full shadow-sm transition-all"
+                                    >
+                                      + Add
+                                    </button>
+                                  ) : (
+                                    <div 
+                                      className="flex items-center bg-saffron-500 rounded-full overflow-hidden shadow-sm"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          removeFromCart(item.id);
+                                        }}
+                                        className="w-8 h-8 flex items-center justify-center text-white text-sm font-bold hover:bg-saffron-600 active:scale-90 transition-all"
+                                      >
+                                        −
+                                      </button>
+                                      <span className="text-white text-xs font-bold min-w-[2ch] text-center px-1">
+                                        {qty}
+                                      </span>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          addToCart(item);
+                                        }}
+                                        className="w-8 h-8 flex items-center justify-center text-white text-sm font-bold hover:bg-saffron-600 active:scale-90 transition-all"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        }
+
+                        // Standard compact card
                         return (
                           <article
                             key={item.id}
                             onClick={() => setSelectedExperienceItem(item)}
-                            className="flex gap-4 bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(26,20,16,0.02)] hover:shadow-[0_8px_30px_rgb(26,20,16,0.05)] transition-all duration-300 border border-line/25 cursor-pointer relative overflow-hidden"
+                            className="flex gap-4 bg-white rounded-lg p-4 shadow-card hover:shadow-card-featured transition-all duration-300 border border-line/25 cursor-pointer relative overflow-hidden"
                           >
                             {/* Photo or Placeholder */}
-                            <div className="relative flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-saffron-50 border border-line/10">
-                              {item.image_url ? (
-                                <img
-                                  src={item.image_url}
-                                  alt={item.name}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-2xl select-none">
-                                  {item.is_veg === 1 ? '🥗' : '🍗'}
-                                </div>
-                              )}
+                            <div className="relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
+                              <img
+                                src={displayImage}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                                style={{ filter: 'saturate(1.1) contrast(1.05) sepia(0.08)' }}
+                                loading="lazy"
+                              />
                             </div>
 
                             {/* Content Info */}
@@ -447,7 +538,7 @@ export function CustomerMenu() {
                               <div>
                                 <div className="flex items-start gap-1.5">
                                   <VegDot isVeg={item.is_veg === 1} />
-                                  <h3 className="text-xs font-black text-ink leading-snug font-sans tracking-tight">
+                                  <h3 className="text-xs font-bold text-ink leading-snug font-sans tracking-tight">
                                     {item.name}
                                   </h3>
                                 </div>
@@ -460,7 +551,7 @@ export function CustomerMenu() {
 
                               {/* Price & Add to Cart Controls */}
                               <div className="flex items-center justify-between mt-2 pt-1">
-                                <span className="text-sm font-black text-[#4A5D4E]">
+                                <span className="text-sm font-bold text-[#4A5D4E]">
                                   ₹{item.price}
                                 </span>
 
@@ -470,13 +561,13 @@ export function CustomerMenu() {
                                       e.stopPropagation();
                                       addToCart(item);
                                     }}
-                                    className="px-4 py-1.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition-all"
+                                    className="px-4 py-1.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white text-xs font-bold rounded-full shadow-sm transition-all"
                                   >
-                                    + ADD
+                                    + Add
                                   </button>
                                 ) : (
                                   <div 
-                                    className="flex items-center bg-saffron-500 rounded-xl overflow-hidden shadow-sm"
+                                    className="flex items-center bg-saffron-500 rounded-full overflow-hidden shadow-sm"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     <button
@@ -516,7 +607,7 @@ export function CustomerMenu() {
 
           {/* ── RIGHT SIDEBAR (Desktop Cart Panel) ── */}
           <aside className="hidden lg:block lg:col-span-3 sticky lg:top-6">
-            <div className="bg-[#1C1715] text-white rounded-3xl p-5 shadow-lg border border-white/5 max-h-[calc(100vh-6rem)] overflow-y-auto flex flex-col justify-between">
+            <div className="bg-[#1C1715] text-white rounded-lg p-5 shadow-lg border border-white/5 max-h-[calc(100vh-6rem)] overflow-y-auto flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-4">
                   <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
@@ -583,9 +674,9 @@ export function CustomerMenu() {
                       const tableParam = table ? `?table=${encodeURIComponent(table)}` : '';
                       navigate(`/checkout/${cafeSlug}${tableParam}`);
                     }}
-                    className="w-full bg-saffron-400 hover:bg-saffron-500 text-[#1C1715] text-xs font-black py-3 rounded-xl transition-all shadow-md uppercase tracking-wider text-center"
+                    className="w-full bg-saffron-400 hover:bg-saffron-500 text-[#1C1715] text-xs font-black py-3 rounded-lg transition-all shadow-md uppercase tracking-wider text-center"
                   >
-                    Place Order (₹{totalAmount})
+                    Send Order to Kitchen (₹{totalAmount})
                   </button>
                 </div>
               )}
@@ -598,9 +689,9 @@ export function CustomerMenu() {
       {/* ── BOTTOM CART DRAWER SUMMARY (Hidden on Desktop) ── */}
       {totalItems > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-3 bg-gradient-to-t from-canvas via-canvas/90 to-transparent pointer-events-none max-w-md mx-auto lg:hidden">
-          <div className="bg-[#1C1715] text-canvas rounded-[2rem] px-5 py-4 shadow-[0_12px_40px_rgba(26,20,16,0.22)] pointer-events-auto flex items-center justify-between animate-slide-up border border-white/5">
+          <div className="bg-[#1C1715] text-canvas rounded-lg px-5 py-4 shadow-[0_12px_40px_rgba(26,20,16,0.22)] pointer-events-auto flex items-center justify-between animate-slide-up border border-white/5">
             <div className="flex items-center gap-3">
-              <div className="bg-saffron-400 text-canvas text-xs font-black w-7 h-7 rounded-xl flex items-center justify-center shadow-inner">
+              <div className="bg-saffron-400 text-canvas text-xs font-black w-7 h-7 rounded-md flex items-center justify-center shadow-inner">
                 {totalItems}
               </div>
               <div>
@@ -626,9 +717,9 @@ export function CustomerMenu() {
                   const tableParam = table ? `?table=${encodeURIComponent(table)}` : '';
                   navigate(`/checkout/${cafeSlug}${tableParam}`);
                 }}
-                className="bg-saffron-400 hover:bg-saffron-500 active:scale-95 text-canvas text-xs font-black px-5 py-2.5 rounded-xl transition-all shadow-md uppercase tracking-wider"
+                className="bg-saffron-400 hover:bg-saffron-500 active:scale-95 text-canvas text-xs font-black px-5 py-2.5 rounded-lg transition-all shadow-md uppercase tracking-wider"
               >
-                Order
+                Order at Counter
               </button>
             </div>
           </div>

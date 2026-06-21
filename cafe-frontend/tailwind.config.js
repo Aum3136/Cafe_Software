@@ -25,7 +25,8 @@ export default {
         serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
-        'card': '0 1px 3px rgba(26,20,16,0.07), 0 1px 2px rgba(26,20,16,0.04)',
+        'card': '0 1px 2px rgba(26,20,16,0.05)',
+        'card-featured': '0 4px 12px rgba(26,20,16,0.08), 0 2px 4px rgba(26,20,16,0.04)',
         'tab':  '0 2px 8px rgba(26,20,16,0.10)',
         'cart': '0 -4px 16px rgba(26,20,16,0.12)',
       },

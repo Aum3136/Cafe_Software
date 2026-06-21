@@ -23,19 +23,34 @@ const createTables = db.transaction(() => {
   // e.g. yourapp.com/menu/chai-corner-vadodara
   db.exec(`
     CREATE TABLE IF NOT EXISTS cafes (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
-      name        TEXT    NOT NULL,
-      slug        TEXT    NOT NULL UNIQUE,       -- URL-safe: "chai-corner-vadodara"
-      owner_name  TEXT    NOT NULL,
-      email       TEXT    NOT NULL UNIQUE,
-      password    TEXT    NOT NULL,              -- bcrypt hash, never plaintext
-      phone       TEXT,
-      logo_url    TEXT,                          -- Cloudinary URL
-      address     TEXT,
-      is_active   INTEGER NOT NULL DEFAULT 1,   -- 0 = suspended, 1 = active
-      created_at  INTEGER NOT NULL DEFAULT (unixepoch())
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+      name                TEXT    NOT NULL,
+      slug                TEXT    NOT NULL UNIQUE,       -- URL-safe: "chai-corner-vadodara"
+      owner_name          TEXT    NOT NULL,
+      email               TEXT    NOT NULL UNIQUE,
+      password            TEXT    NOT NULL,              -- bcrypt hash, never plaintext
+      phone               TEXT,
+      logo_url            TEXT,                          -- Cloudinary URL
+      address             TEXT,
+      is_active           INTEGER NOT NULL DEFAULT 1,   -- 0 = suspended, 1 = active
+      created_at          INTEGER NOT NULL DEFAULT (unixepoch()),
+      reset_token         TEXT,
+      reset_token_expires INTEGER
     );
   `);
+
+  // Migrate existing databases safely
+  try {
+    db.exec(`ALTER TABLE cafes ADD COLUMN reset_token TEXT;`);
+  } catch (err) {
+    // Column already exists or table doesn't exist yet
+  }
+
+  try {
+    db.exec(`ALTER TABLE cafes ADD COLUMN reset_token_expires INTEGER;`);
+  } catch (err) {
+    // Column already exists
+  }
 
   // ── 2. CATEGORIES ─────────────────────────────────────────────────────────
   // e.g. "Breakfast", "Cold Drinks", "Snacks"
