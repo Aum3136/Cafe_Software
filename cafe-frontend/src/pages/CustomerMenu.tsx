@@ -2,12 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { VegDot } from '../components/VegDot';
 import { useCart } from '../context/CartContext';
-import type { CafeInfo, MenuItem, MenuCategory } from '../types';
+import { useMenu } from '../hooks/useMenu';
+import type { MenuItem } from '../types';
 import { DishExperienceModal } from '../components/DishExperienceModal';
 import { getFallbackImage } from '../components/ItemCard';
 import { MoodEntry } from '../components/MoodEntry';
-
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 export function CustomerMenu() {
   const { cafeSlug } = useParams<{ cafeSlug: string }>();
@@ -27,11 +26,8 @@ export function CustomerMenu() {
     deviceLabel
   } = useCart();
 
-  // Menu states
-  const [cafe, setCafe] = useState<CafeInfo | null>(null);
-  const [menu, setMenu] = useState<MenuCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Menu states via hook (includes 30s polling)
+  const { cafe, menu, isLoading, error } = useMenu(cafeSlug);
   const [selectedExperienceItem, setSelectedExperienceItem] = useState<MenuItem | null>(null);
 
   // Filter & search states
@@ -41,75 +37,6 @@ export function CustomerMenu() {
   const [moodFilter, setMoodFilter] = useState<{ keywords: string[]; label: string } | null>(null);
 
   const categoryScrollRef = useRef<HTMLDivElement>(null);
-
-  // Fetch menu data on mount / cafeSlug change
-  const fetchMenu = async () => {
-    if (!cafeSlug) {
-      setError('Invalid cafe link.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await fetch(`${BASE_URL}/api/menu/${cafeSlug}`);
-      if (!response.ok) {
-        let message = `Error: ${response.status} ${response.statusText}`;
-        try {
-          const body = await response.json();
-          if (body?.error) message = body.error;
-        } catch {
-          // Ignore JSON parse failure
-        }
-        throw new Error(message);
-      }
-
-      const data = await response.json();
-      
-      // Inject client-side mock 3D model URLs onto premium items for verification
-      const updatedMenu = data.menu.map((cat: MenuCategory) => ({
-        ...cat,
-        items: cat.items.map((item: MenuItem) => {
-          if (item.name === 'Masala Chai') {
-            return {
-              ...item,
-              '3d_model_url': 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Avocado/glTF-Binary/Avocado.glb',
-              ingredients: ['Fresh Ginger', 'Cardamom Pods', 'Assam Tea Leaves', 'Full Cream Milk', 'Sugar']
-            };
-          }
-          if (item.name === 'The Classic Cheese & Garlic') {
-            return {
-              ...item,
-              '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
-              ingredients: ['Crispy Bread', 'Cheddar Cheese', 'Mozzarella', 'Garlic Butter', 'Oregano']
-            };
-          }
-          if (item.name === 'Classic Blend Cold Coffee') {
-            return {
-              ...item,
-              '3d_model_url': 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
-              ingredients: ['Espresso Shot', 'Chilled Milk', 'Sweet Cream', 'Ice Cubes']
-            };
-          }
-          return item;
-        })
-      }));
-
-      setCafe(data.cafe);
-      setMenu(updatedMenu);
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch menu items.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenu();
-  }, [cafeSlug]);
 
   useEffect(() => {
     if (table) {
@@ -121,6 +48,11 @@ export function CustomerMenu() {
     setActiveCategory(catId);
     setMoodFilter(null);
   };
+
+  const availableItemIds = new Set(menu.flatMap(cat => cat.items).map(item => item.id));
+  const hasUnavailableItems = !isLoading && menu.length > 0 && contextCart.items.length > 0 && contextCart.items.some(
+    cartItem => !availableItemIds.has(cartItem.item_id)
+  );
 
   // Filter menu categories and items
   const filteredMenu = menu
@@ -194,7 +126,7 @@ export function CustomerMenu() {
         <h2 className="text-xl font-bold text-ink mb-2">Failed to load Menu</h2>
         <p className="text-muted text-sm mb-6">{error}</p>
         <button
-          onClick={fetchMenu}
+          onClick={() => window.location.reload()}
           className="px-6 py-2.5 bg-saffron-500 hover:bg-saffron-600 active:scale-95 text-white font-semibold rounded-xl transition-all shadow-md"
         >
           Try Again
@@ -306,6 +238,12 @@ export function CustomerMenu() {
 
           {/* ── CENTER AREA (Search + Mobile Categories + Menu Items) ── */}
           <div className="col-span-1 lg:col-span-6 flex flex-col min-w-0">
+            {hasUnavailableItems && (
+              <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2 mb-4 animate-pulse animate-duration-1000">
+                <span>⚠️</span>
+                <span>Some items in your cart are no longer available.</span>
+              </div>
+            )}
             {/* Search & Veg Toggle Row (Sticky on Mobile, Static Header on Desktop) */}
             <div className="sticky lg:relative top-0 z-30 bg-canvas/85 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none border-b border-line/40 lg:border-none py-3.5 lg:py-0 lg:mb-6 space-y-3.5 shadow-sm lg:shadow-none -mx-4 px-4 lg:mx-0 lg:px-0">
               <div className="flex gap-2 items-center">

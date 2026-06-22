@@ -31,7 +31,12 @@ export function MenuPage() {
   const { cafeSlug } = useParams<{ cafeSlug: string }>();
   const navigate = useNavigate();
   const { cafe, menu, isLoading, error } = useMenu(cafeSlug);
-  useCart(); // CartBar reads cart state directly via context
+  const { cart } = useCart(); // CartBar reads cart state directly via context
+
+  const availableItemIds = new Set(menu.flatMap(cat => cat.items).map(item => item.id));
+  const hasUnavailableItems = !isLoading && menu.length > 0 && cart.items.length > 0 && cart.items.some(
+    cartItem => !availableItemIds.has(cartItem.item_id)
+  );
 
   const [activeId, setActiveId]         = useState<number | null>(null);
   const [isScrolling, setIsScrolling]   = useState(false);
@@ -166,6 +171,12 @@ export function MenuPage() {
         className="px-4 pt-3 pb-28"
         // pb-28 = space for CartBar so last item isn't hidden behind it
       >
+        {hasUnavailableItems && (
+          <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2 mb-4 animate-pulse animate-duration-1000">
+            <span>⚠️</span>
+            <span>Some items in your cart are no longer available.</span>
+          </div>
+        )}
         {isLoading ? (
           <MenuSkeleton />
         ) : menu.length === 0 ? (
