@@ -168,6 +168,44 @@ const checkRateLimit = (email) => {
   return true;
 };
 
+// Background memory cleanup for rate limiters (Garbage Collector) to prevent memory leaks
+const CLEANUP_INTERVAL = 10 * 60 * 1000; // 10 minutes
+
+const cleanupRateLimitMaps = () => {
+  const now = Date.now();
+  const fifteenMinutesAgo = now - 15 * 60 * 1000;
+  const oneHourAgo = now - 3600 * 1000;
+
+  // Clean loginRateLimitMap
+  for (const email in loginRateLimitMap) {
+    loginRateLimitMap[email] = loginRateLimitMap[email].filter(timestamp => timestamp > fifteenMinutesAgo);
+    if (loginRateLimitMap[email].length === 0) {
+      delete loginRateLimitMap[email];
+    }
+  }
+
+  // Clean rateLimitMap
+  for (const email in rateLimitMap) {
+    rateLimitMap[email] = rateLimitMap[email].filter(timestamp => timestamp > oneHourAgo);
+    if (rateLimitMap[email].length === 0) {
+      delete rateLimitMap[email];
+    }
+  }
+};
+
+// Start background task
+const cleanupTimer = setInterval(cleanupRateLimitMaps, CLEANUP_INTERVAL);
+
+// Unref the timer so it doesn't prevent Node.js from exiting in test/script runs
+if (cleanupTimer && typeof cleanupTimer.unref === 'function') {
+  cleanupTimer.unref();
+}
+
+// Export references on the login handler for testing and verification
+login.loginRateLimitMap = loginRateLimitMap;
+login.rateLimitMap = rateLimitMap;
+login.cleanupRateLimitMaps = cleanupRateLimitMaps;
+
 // POST /api/auth/forgot-password
 const forgotPassword = async (req, res, next) => {
   try {
