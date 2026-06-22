@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { Coffee } from 'lucide-react';
 import { VegDot } from '../components/VegDot';
 import { useCart } from '../context/CartContext';
 import { useMenu } from '../hooks/useMenu';
@@ -179,10 +180,13 @@ export function CustomerMenu() {
                   className="w-12 h-12 lg:w-16 lg:h-16 rounded-full object-cover border-2 border-canvas shadow-md"
                 />
               ) : (
-                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-saffron-500 flex items-center justify-center border-2 border-canvas shadow-md">
-                  <span className="text-canvas font-black text-lg lg:text-2xl font-serif">
-                    {cafe?.name?.[0] ?? 'C'}
-                  </span>
+                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl bg-[#1C1715]/80 backdrop-blur-sm flex items-center justify-center border border-canvas/10 shadow-lg ring-1 ring-amber-500/10 transition-all duration-300">
+                  <Coffee
+                    className="text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.45)]"
+                    size={22}
+                    strokeWidth={1.75}
+                    aria-label="Cafe icon"
+                  />
                 </div>
               )}
               <div>
