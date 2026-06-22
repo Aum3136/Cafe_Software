@@ -66,6 +66,45 @@ const register = (req, res, next) => {
   }
 };
 
+// Simple in-memory rate limiting map for login: email -> array of timestamps (ms)
+const loginRateLimitMap = {};
+
+const checkLoginRateLimit = (email) => {
+  const now = Date.now();
+  const fifteenMinutesAgo = now - 15 * 60 * 1000;
+
+  if (!loginRateLimitMap[email]) {
+    loginRateLimitMap[email] = [];
+  }
+
+  // Filter out timestamps older than 15 minutes
+  loginRateLimitMap[email] = loginRateLimitMap[email].filter(timestamp => timestamp > fifteenMinutesAgo);
+
+  if (loginRateLimitMap[email].length >= 5) {
+    const oldestAttempt = loginRateLimitMap[email][0];
+    const timeRemainingMs = (oldestAttempt + 15 * 60 * 1000) - now;
+    const minutesRemaining = Math.ceil(timeRemainingMs / (60 * 1000));
+    return {
+      allowed: false,
+      message: `Too many login attempts. Please try again in ${minutesRemaining} minute${minutesRemaining !== 1 ? 's' : ''}.`
+    };
+  }
+
+  return { allowed: true };
+};
+
+const recordFailedLoginAttempt = (email) => {
+  const now = Date.now();
+  if (!loginRateLimitMap[email]) {
+    loginRateLimitMap[email] = [];
+  }
+  loginRateLimitMap[email].push(now);
+};
+
+const clearLoginAttempts = (email) => {
+  delete loginRateLimitMap[email];
+};
+
 // POST /api/auth/login
 const login = (req, res, next) => {
   try {
@@ -75,15 +114,27 @@ const login = (req, res, next) => {
       return res.status(400).json({ error: 'email and password are required.' });
     }
 
-    const cafe = db.prepare('SELECT * FROM cafes WHERE email = ?').get(email);
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Check login rate limit
+    const rateLimitCheck = checkLoginRateLimit(trimmedEmail);
+    if (!rateLimitCheck.allowed) {
+      return res.status(429).json({ error: rateLimitCheck.message });
+    }
+
+    const cafe = db.prepare('SELECT * FROM cafes WHERE email = ?').get(trimmedEmail);
 
     // Use a generic message — don't reveal whether email or password was wrong
     if (!cafe || !bcrypt.compareSync(password, cafe.password)) {
+      recordFailedLoginAttempt(trimmedEmail);
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
     if (!cafe.is_active) {
       return res.status(403).json({ error: 'This account has been suspended.' });
     }
+
+    // Reset failed login attempts on success
+    clearLoginAttempts(trimmedEmail);
 
     res.json({
       token: generateToken(cafe),
