@@ -4,12 +4,13 @@ require('./db/schema'); // Initialize DB tables on startup
 const express = require('express');
 const cors = require('cors');
 
-const authRoutes       = require('./routes/auth');
-const itemRoutes       = require('./routes/items');
-const categoryRoutes   = require('./routes/categories');
-const orderRoutes      = require('./routes/orders');
-const menuRoutes       = require('./routes/menu');
+const authRoutes         = require('./routes/auth');
+const itemRoutes         = require('./routes/items');
+const categoryRoutes     = require('./routes/categories');
+const orderRoutes        = require('./routes/orders');
+const menuRoutes         = require('./routes/menu');
 const tableSessionRoutes = require('./routes/tableSessions');
+const analyticsRoutes    = require('./routes/analytics');
 const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -62,6 +63,7 @@ app.use('/api/categories',    categoryRoutes);
 app.use('/api/orders',        orderRoutes);
 app.use('/api/menu',          menuRoutes);
 app.use('/api/table-session', tableSessionRoutes);
+app.use('/api/analytics',     analyticsRoutes);
 
 // ── 404 HANDLER ───────────────────────────────────────────────────────────
 app.use((req, res) => {
