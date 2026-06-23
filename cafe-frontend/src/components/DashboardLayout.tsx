@@ -159,7 +159,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row relative">
       {/* ── MOBILE NAV HEADER ── */}
-      <div className="md:hidden bg-surface border-b border-line px-4 py-3.5 flex items-center justify-between sticky top-0 z-50">
+      <div className="md:hidden bg-surface border-b border-line px-4 py-3.5 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-2">
           <span className="text-xl">☕</span>
           <div>
@@ -180,14 +180,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* ── SIDEBAR DRAWER (Responsive) ── */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-64 bg-ink text-white flex flex-col justify-between p-5 border-r border-ink/20
-          transform transition-transform duration-300 ease-in-out md:relative md:transform-none
+          fixed inset-y-0 left-0 z-50 w-64 bg-ink text-white flex flex-col justify-between p-5 border-r border-ink/20
+          overflow-y-auto transform transition-transform duration-300 ease-in-out md:relative md:transform-none
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
         <div className="space-y-6">
           {/* Cafe Header Profile */}
-          <div className="hidden md:flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
             <div className="w-9 h-9 rounded-full bg-saffron-500 flex items-center justify-center font-black text-white text-base">
               {cafeName?.[0] ?? '☕'}
             </div>
@@ -238,7 +238,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-ink/40 md:hidden"
+          className="fixed inset-0 z-40 bg-ink/40 md:hidden"
         />
       )}
 
