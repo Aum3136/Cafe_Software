@@ -45,6 +45,28 @@ export function MenuManager() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Edit modal states
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editPrice, setEditPrice] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editCategoryId, setEditCategoryId] = useState('');
+  const [editIsVeg, setEditIsVeg] = useState(true);
+  const [editImageUrl, setEditImageUrl] = useState('');
+  const [editIsSubmitting, setEditIsSubmitting] = useState(false);
+  const [editFormError, setEditFormError] = useState<string | null>(null);
+
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
   // Fetch items & categories
   const fetchData = async () => {
     if (!token) return;
@@ -174,6 +196,112 @@ export function MenuManager() {
     }
   };
 
+  // ── EDIT ITEM INITIATE ──
+  const openEditModal = (item: MenuItem) => {
+    setEditingItem(item);
+    setEditName(item.name);
+    setEditPrice(item.price.toString());
+    setEditDescription(item.description || '');
+    setEditCategoryId(item.category_id.toString());
+    setEditIsVeg(item.is_veg === 1);
+    setEditImageUrl(item.image_url || '');
+    setEditFormError(null);
+    setIsEditModalOpen(true);
+  };
+
+  // ── EDIT ITEM SUBMIT ──
+  const handleEditItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    if (!editName.trim() || !editPrice.trim() || !editCategoryId) {
+      setEditFormError('Name, Price, and Category are required fields.');
+      return;
+    }
+
+    const priceNum = parseFloat(editPrice);
+    if (isNaN(priceNum) || priceNum < 0) {
+      setEditFormError('Please enter a valid price.');
+      return;
+    }
+
+    setEditIsSubmitting(true);
+    setEditFormError(null);
+
+    // Calculate changed fields
+    const updates: Record<string, any> = {};
+    if (editName.trim() !== editingItem.name) {
+      updates.name = editName.trim();
+    }
+    if (priceNum !== editingItem.price) {
+      updates.price = priceNum;
+    }
+    const finalDesc = editDescription.trim() || null;
+    if (finalDesc !== editingItem.description) {
+      updates.description = finalDesc;
+    }
+    const catIdNum = parseInt(editCategoryId);
+    if (catIdNum !== editingItem.category_id) {
+      updates.category_id = catIdNum;
+    }
+    const isVegVal = editIsVeg ? 1 : 0;
+    if (isVegVal !== editingItem.is_veg) {
+      updates.is_veg = isVegVal;
+    }
+    const finalImg = editImageUrl.trim() || null;
+    if (finalImg !== editingItem.image_url) {
+      updates.image_url = finalImg;
+    }
+
+    // If there are no changes, just close the modal and show success toast
+    if (Object.keys(updates).length === 0) {
+      setIsEditModalOpen(false);
+      showToast('Item details unchanged.');
+      setEditIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/items/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        let errMsg = 'Failed to update item.';
+        try {
+          const body = await response.json();
+          if (body?.error) errMsg = body.error;
+        } catch {
+          // ignore
+        }
+        throw new Error(errMsg);
+      }
+
+      /*
+        Price Change Ripple Consideration:
+        Existing orders inside session_cart_items save item_price as a snapshot
+        when the customer adds the item to the cart. Therefore, updates to item prices
+        via this dashboard edit modal will not retroactively alter the price of items
+        already present in an active, shared cart. This aligns with order_items
+        which also snapshots pricing at time of order creation.
+      */
+
+      // Refresh list, close modal, show success toast
+      await fetchData();
+      setIsEditModalOpen(false);
+      showToast('Item updated successfully!');
+    } catch (err) {
+      setEditFormError(err instanceof Error ? err.message : 'Error updating item.');
+    } finally {
+      setEditIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Page Header */}
@@ -267,22 +395,32 @@ export function MenuManager() {
                       {item.is_available === 1 ? 'Instock' : 'Sold out'}
                     </span>
 
-                    {/* Custom Toggle Switch */}
-                    <button
-                      onClick={() => handleToggleAvailable(item.id)}
-                      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        item.is_available === 1 ? 'bg-saffron-500' : 'bg-ghost'
-                      }`}
-                      role="switch"
-                      aria-checked={item.is_available === 1}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          item.is_available === 1 ? 'translate-x-4' : 'translate-x-0'
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className="p-1.5 hover:bg-canvas text-saffron-600 rounded-lg text-xs font-bold transition-all border border-line"
+                        title="Edit item"
+                      >
+                        Edit
+                      </button>
+
+                      {/* Custom Toggle Switch */}
+                      <button
+                        onClick={() => handleToggleAvailable(item.id)}
+                        className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          item.is_available === 1 ? 'bg-saffron-500' : 'bg-ghost'
                         }`}
-                      />
-                    </button>
+                        role="switch"
+                        aria-checked={item.is_available === 1}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            item.is_available === 1 ? 'translate-x-4' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -436,6 +574,205 @@ export function MenuManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── EDIT ITEM MODAL ── */}
+      {isEditModalOpen && editingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Overlay */}
+          <div onClick={() => setIsEditModalOpen(false)} className="absolute inset-0 bg-ink/40" />
+
+          {/* Modal Card */}
+          <div className="bg-surface rounded-lg shadow-xl border border-line w-full max-w-md p-6 relative z-10 space-y-5 animate-slide-up">
+            <div className="flex justify-between items-center border-b border-line pb-3">
+              <h2 className="text-base font-bold text-ink font-serif">
+                Edit Menu Item
+              </h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-ghost hover:text-muted text-lg font-black"
+              >
+                ×
+              </button>
+            </div>
+
+            {editFormError && (
+              <div className="bg-red-50 text-red-600 border border-red-100 text-xs font-semibold p-3 rounded-lg">
+                {editFormError}
+              </div>
+            )}
+
+            <form onSubmit={handleEditItem} className="space-y-4">
+              <div>
+                <label htmlFor="edit-item-name" className="block text-xs font-bold text-ink mb-1">
+                  Item Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="edit-item-name"
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="e.g. Ginger Tea, Paneer Tikka"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="edit-item-price" className="block text-xs font-bold text-ink mb-1">
+                    Price (₹) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="edit-item-price"
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    placeholder="e.g. 40"
+                    className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="edit-item-category" className="block text-xs font-bold text-ink mb-1">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="edit-item-category"
+                    required
+                    value={editCategoryId}
+                    onChange={(e) => setEditCategoryId(e.target.value)}
+                    className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label htmlFor="edit-item-description" className="text-xs font-bold text-ink">
+                    Description
+                  </label>
+                  <span className={`text-[10px] ${editDescription.length > 120 ? 'text-red-500 font-bold' : 'text-muted'}`}>
+                    {editDescription.length}/120
+                  </span>
+                </div>
+                <textarea
+                  id="edit-item-description"
+                  rows={2}
+                  maxLength={120}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="e.g. Classic home-style spiced tea with cardamom"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-canvas transition-colors resize-none"
+                />
+              </div>
+
+              {/* FSSAI Veg / Non-Veg Toggle with VegDot preview */}
+              <div className="flex items-center justify-between bg-canvas border border-line rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <VegDot isVeg={editIsVeg} size="md" />
+                  <div>
+                    <span className="block text-xs font-bold text-ink">Food Type</span>
+                    <span className="text-[10px] text-muted">{editIsVeg ? 'Vegetarian' : 'Non-Vegetarian'}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setEditIsVeg(!editIsVeg)}
+                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    editIsVeg ? 'bg-veg' : 'bg-nonveg'
+                  }`}
+                  role="switch"
+                  aria-checked={editIsVeg}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      editIsVeg ? 'translate-x-4' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Image URL with preview */}
+              <div className="flex gap-3 items-end bg-canvas border border-line rounded-lg p-3">
+                <div className="flex-1">
+                  <label htmlFor="edit-item-image" className="block text-xs font-bold text-ink mb-1">
+                    Image URL
+                  </label>
+                  <input
+                    id="edit-item-image"
+                    type="text"
+                    value={editImageUrl}
+                    onChange={(e) => setEditImageUrl(e.target.value)}
+                    placeholder="e.g. https://images.unsplash.com/photo-..."
+                    className="w-full border border-line rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-saffron-500 bg-surface transition-colors"
+                  />
+                </div>
+                <div className="relative flex-shrink-0 w-12 h-12 rounded-md overflow-hidden bg-saffron-50 border border-line flex items-center justify-center">
+                  <img
+                    src={editImageUrl.trim() || getFallbackImage(editName, categories.find(c => c.id.toString() === editCategoryId)?.name || '')}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = getFallbackImage(editName, categories.find(c => c.id.toString() === editCategoryId)?.name || '');
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Submit / Cancel Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 bg-line hover:bg-line/80 active:scale-[0.98] text-muted text-xs font-bold py-2.5 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={editIsSubmitting}
+                  className="flex-1 bg-saffron-500 hover:bg-saffron-600 active:scale-[0.98] text-white text-xs font-bold py-2.5 rounded-lg transition-all shadow-md disabled:opacity-50"
+                >
+                  {editIsSubmitting ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+          <div className={`px-4 py-3 rounded-lg border shadow-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            toast.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`}>
+            {toast.type === 'success' ? (
+              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            )}
+            <span>{toast.message}</span>
           </div>
         </div>
       )}
