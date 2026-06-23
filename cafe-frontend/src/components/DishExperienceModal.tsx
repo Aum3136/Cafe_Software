@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { MenuItem } from '../types';
 import { VegDot } from './VegDot';
+import { getFallbackImage } from './ItemCard';
 
 interface DishExperienceModalProps {
   item: MenuItem;
@@ -52,7 +53,6 @@ export function DishExperienceModal({
   };
 
   const ingredientsList = getIngredients();
-  const has3dModel = !!item['3d_model_url'];
 
   return (
     <div
@@ -82,37 +82,16 @@ export function DishExperienceModal({
         </button>
 
         {/* ── UPPER MEDIA FRAME ── */}
-        <div className="relative w-full aspect-[4/3] bg-[#F8F6F4] overflow-hidden border-b border-line/45 flex items-center justify-center select-none">
-          {has3dModel ? (
-            <model-viewer
-              src={item['3d_model_url']}
-              alt={`3D model of ${item.name}`}
-              ar
-              ar-modes="webxr scene-viewer quick-look"
-              camera-controls
-              auto-rotate
-              poster={item.image_url ?? undefined}
-              shadow-intensity="1"
-              style={{ width: '100%', height: '100%', outline: 'none' }}
-            />
-          ) : item.image_url ? (
-            <img
-              src={item.image_url}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="text-7xl">
-              {item.is_veg === 1 ? '🥗' : '🍗'}
-            </div>
-          )}
-
-          {/* 3D Indicator Badge */}
-          {has3dModel && (
-            <div className="absolute left-4 bottom-4 bg-saffron-500/90 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1.5 backdrop-blur-sm">
-              <span className="animate-pulse">🥽</span> 3D & AR Active
-            </div>
-          )}
+        <div className="relative w-full h-[240px] bg-[#F8F6F4] overflow-hidden border-b border-line/45 flex items-center justify-center select-none rounded-t-[2rem] sm:rounded-t-3xl">
+          <img
+            src={item.image_url || getFallbackImage(item.name)}
+            alt={item.name}
+            className="w-full h-full object-cover animate-fade-in"
+            style={{ filter: 'saturate(1.1) contrast(1.05) sepia(0.08)' }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = getFallbackImage(item.name);
+            }}
+          />
         </div>
 
         {/* ── LOWER INFORMATION PANEL ── */}
