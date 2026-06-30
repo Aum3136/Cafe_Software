@@ -57,7 +57,7 @@ export function ItemCard({ item, cafeSlug, isFeatured = false, categoryName = ''
 
   if (isFeatured) {
     return (
-      <article className="flex flex-col gap-3.5 bg-surface rounded-lg p-4 shadow-card-featured border border-line/25 w-full">
+      <article className={`flex flex-col gap-3.5 bg-surface rounded-lg p-4 shadow-card-featured border border-line/25 w-full ${item.isPopular ? 'popular-card' : ''}`}>
         {/* Photo Container */}
         <div className="relative w-full h-48 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
           <img
@@ -72,6 +72,13 @@ export function ItemCard({ item, cafeSlug, isFeatured = false, categoryName = ''
         {/* Content Container */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
+            {item.isPopular && (
+              <div className="mb-1.5">
+                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
+                  ★ Best Seller
+                </span>
+              </div>
+            )}
             <div className="flex items-start gap-2 mb-1">
               <VegDot isVeg={item.is_veg === 1} />
               <h3 className="text-base font-bold text-ink leading-snug font-sans tracking-tight">
@@ -135,7 +142,7 @@ export function ItemCard({ item, cafeSlug, isFeatured = false, categoryName = ''
 
   // Standard Compact Card Layout
   return (
-    <article className="flex gap-3 bg-surface rounded-lg p-3 shadow-card border border-line/10">
+    <article className={`flex gap-3 bg-surface rounded-lg p-3 shadow-card border border-line/10 ${item.isPopular ? 'popular-card' : ''}`}>
       {/* Photo Container */}
       <div className="relative flex-shrink-0 w-24 h-24 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
         <img
@@ -150,6 +157,13 @@ export function ItemCard({ item, cafeSlug, isFeatured = false, categoryName = ''
       {/* Content Container */}
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>
+          {item.isPopular && (
+            <div className="mb-1">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
+                ★ Best Seller
+              </span>
+            </div>
+          )}
           <div className="flex items-start gap-2 mb-0.5">
             <VegDot isVeg={item.is_veg === 1} />
             <h3 className="text-sm font-semibold text-ink leading-snug line-clamp-2">

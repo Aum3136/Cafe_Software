@@ -13,6 +13,8 @@ const seed = db.transaction(() => {
 
   // Wipe in FK-safe order (children before parents)
   db.exec(`
+    DELETE FROM session_cart_items;
+    DELETE FROM table_sessions;
     DELETE FROM order_items;
     DELETE FROM orders;
     DELETE FROM items;
@@ -82,15 +84,25 @@ const seed = db.transaction(() => {
   const imgSandwich = 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=400&fit=crop&q=80';
   const imgLemonade = 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop&q=80';
 
-  const insertItem = db.prepare(`
+  const insertItemStmt = db.prepare(`
     INSERT INTO items (cafe_id, category_id, name, description, price, image_url, is_veg, sort_order)
     VALUES (@cafe_id, @category_id, @name, @description, @price, @image_url, @is_veg, @sort_order)
   `);
+  const insertItem = {
+    run(args) {
+      const { is_popular, ...rest } = args;
+      const result = insertItemStmt.run(rest);
+      if (is_popular !== undefined) {
+        db.prepare('UPDATE items SET is_popular = ? WHERE id = ?').run(is_popular, result.lastInsertRowid);
+      }
+      return result;
+    }
+  };
 
   // ── Cafe 1: Mélange Cafe & Lounge Items (70 items) ──
 
   // The Real Sandwich (7 items)
-  const idSand1 = insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Holly Molly Blueberry', description: 'Blueberry, lime & cheese grill — sweet, tangy, ekdum unique.', price: 240, image_url: imgSandwich, is_veg: 1, sort_order: 1 });
+  const idSand1 = insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Holly Molly Blueberry', description: 'Blueberry, lime & cheese grill — sweet, tangy, ekdum unique.', price: 240, image_url: imgSandwich, is_veg: 1, sort_order: 1, is_popular: 1 });
   insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Mushroom', description: 'Mushrooms and loaded cheese, toasted till super melty.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 2 });
   insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Classic Italian', description: 'Tomato, fresh basil, and gooey cheese. A simple Italian love affair.', price: 200, image_url: imgSandwich, is_veg: 1, sort_order: 3 });
   insertItem.run({ cafe_id: c1, category_id: catRealSandwich.lastInsertRowid, name: 'Creamy Tandoori Paneer', description: 'Tandoori-spiced paneer with creamy mayo. Chatpata and filling!', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 4 });
@@ -101,7 +113,7 @@ const seed = db.transaction(() => {
   // On - Bread (4 items)
   insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The American One', description: 'Warm baked beans and cheese on toast. Comforting American classic.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 1 });
   insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'Loaded Mushroom', description: 'Creamy garlic mushrooms piled high on toasted bread.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 2 });
-  const idGarlicBread = insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Classic Cheese & Garlic', description: 'Melted cheese and fresh garlic butter on crispy toast. Hard to resist!', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 3 });
+  const idGarlicBread = insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Classic Cheese & Garlic', description: 'Melted cheese and fresh garlic butter on crispy toast. Hard to resist!', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 3, is_popular: 1 });
   insertItem.run({ cafe_id: c1, category_id: catOnBread.lastInsertRowid, name: 'The Trinity Cheese', description: 'Our signature three-cheese spread on hot crispy toast.', price: 180, image_url: imgSandwich, is_veg: 1, sort_order: 4 });
 
   // Pizza (1 item)
@@ -170,7 +182,7 @@ const seed = db.transaction(() => {
   insertItem.run({ cafe_id: c1, category_id: catShakes.lastInsertRowid, name: 'Freaky Ferrero', description: 'Thick milkshake loaded with crunchy Ferrero Rocher chocolates.', price: 280, image_url: imgColdCoffee, is_veg: 1, sort_order: 8 });
 
   // Frappes (5 items)
-  const idColdCoffee = insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Classic Blend Cold Coffee', description: 'Cold coffee the way Vadodara likes it — thick and sweet.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 1 });
+  const idColdCoffee = insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Classic Blend Cold Coffee', description: 'Cold coffee the way Vadodara likes it — thick and sweet.', price: 200, image_url: imgColdCoffee, is_veg: 1, sort_order: 1, is_popular: 1 });
   insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Mocha Frappe', description: 'Blended cold coffee infused with rich chocolate syrup.', price: 220, image_url: imgColdCoffee, is_veg: 1, sort_order: 2 });
   insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Crazy Caramel', description: 'Sweet blended coffee with a warm caramel drizzle.', price: 240, image_url: imgColdCoffee, is_veg: 1, sort_order: 3 });
   insertItem.run({ cafe_id: c1, category_id: catFrappes.lastInsertRowid, name: 'Hazy Hazelnut', description: 'Creamy cold coffee with nutty hazelnut syrup notes.', price: 240, image_url: imgColdCoffee, is_veg: 1, sort_order: 4 });

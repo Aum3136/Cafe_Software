@@ -44,7 +44,7 @@ const publicMenu = (req, res, next) => {
     `).all(cafe.id);
 
     const items = db.prepare(`
-      SELECT id, category_id, name, description, price, image_url, is_veg, sort_order
+      SELECT id, category_id, name, description, price, image_url, is_veg, sort_order, is_popular
       FROM items
       WHERE cafe_id = ? AND is_available = 1
       ORDER BY sort_order
@@ -53,7 +53,12 @@ const publicMenu = (req, res, next) => {
     // Nest items under their category — saves the frontend a groupBy call
     const menu = categories.map(cat => ({
       ...cat,
-      items: items.filter(item => item.category_id === cat.id)
+      items: items
+        .filter(item => item.category_id === cat.id)
+        .map(item => ({
+          ...item,
+          isPopular: item.is_popular === 1
+        }))
     }));
 
     res.json({ cafe, menu });

@@ -16,6 +16,7 @@ export interface MenuItem {
   image_url: string | null;
   is_veg: 0 | 1;      // 1 = veg (green dot), 0 = non-veg (red dot)
   sort_order: number;
+  isPopular?: boolean;
   "3d_model_url"?: string;
   ingredients?: string[];
 }

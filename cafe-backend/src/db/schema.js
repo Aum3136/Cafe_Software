@@ -52,6 +52,12 @@ const createTables = db.transaction(() => {
     // Column already exists
   }
 
+  try {
+    db.exec(`ALTER TABLE items ADD COLUMN is_popular INTEGER NOT NULL DEFAULT 0;`);
+  } catch (err) {
+    // Column already exists or table doesn't exist yet
+  }
+
   // ── 2. CATEGORIES ─────────────────────────────────────────────────────────
   // e.g. "Breakfast", "Cold Drinks", "Snacks"
   // sort_order controls display sequence in the customer menu tab bar
@@ -84,6 +90,7 @@ const createTables = db.transaction(() => {
       image_url     TEXT,                          -- Cloudinary URL
       is_veg        INTEGER NOT NULL DEFAULT 1,    -- 1 = veg (green dot), 0 = non-veg (red dot)
       is_available  INTEGER NOT NULL DEFAULT 1,    -- 0 = sold out, hidden from customer menu
+      is_popular    INTEGER NOT NULL DEFAULT 0,    -- 1 = popular/best seller, 0 = regular
       sort_order    INTEGER NOT NULL DEFAULT 0,
       created_at    INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at    INTEGER NOT NULL DEFAULT (unixepoch()),

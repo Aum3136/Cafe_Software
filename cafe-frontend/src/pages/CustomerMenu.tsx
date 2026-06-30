@@ -369,7 +369,7 @@ export function CustomerMenu() {
                             <article
                               key={item.id}
                               onClick={() => setSelectedExperienceItem(item)}
-                              className="col-span-1 sm:col-span-2 flex flex-col gap-3.5 bg-white rounded-lg p-4 shadow-card-featured border border-line/25 cursor-pointer relative overflow-hidden"
+                              className={`col-span-1 sm:col-span-2 flex flex-col gap-3.5 bg-white rounded-lg p-4 shadow-card-featured border border-line/25 cursor-pointer relative overflow-hidden ${item.isPopular ? 'popular-card' : ''}`}
                             >
                               {/* Photo container */}
                               <div className="relative w-full h-48 sm:h-64 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
@@ -385,6 +385,13 @@ export function CustomerMenu() {
                               {/* Content Info */}
                               <div className="flex-1 flex flex-col justify-between">
                                 <div>
+                                  {item.isPopular && (
+                                    <div className="mb-1.5">
+                                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
+                                        ★ Best Seller
+                                      </span>
+                                    </div>
+                                  )}
                                   <div className="flex items-start gap-2 mb-1">
                                     <VegDot isVeg={item.is_veg === 1} />
                                     <h3 className="text-base font-bold text-ink leading-snug font-sans tracking-tight">
@@ -458,7 +465,7 @@ export function CustomerMenu() {
                           <article
                             key={item.id}
                             onClick={() => setSelectedExperienceItem(item)}
-                            className="flex gap-4 bg-white rounded-lg p-4 shadow-card hover:shadow-card-featured transition-all duration-300 border border-line/25 cursor-pointer relative overflow-hidden"
+                            className={`flex gap-4 bg-white rounded-lg p-4 shadow-card hover:shadow-card-featured transition-all duration-300 border border-line/25 cursor-pointer relative overflow-hidden ${item.isPopular ? 'popular-card' : ''}`}
                           >
                             {/* Photo or Placeholder */}
                             <div className="relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden bg-saffron-50 border border-line/10">
@@ -474,6 +481,13 @@ export function CustomerMenu() {
                             {/* Content Info */}
                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                               <div>
+                                {item.isPopular && (
+                                  <div className="mb-1">
+                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
+                                      ★ Best Seller
+                                    </span>
+                                  </div>
+                                )}
                                 <div className="flex items-start gap-1.5">
                                   <VegDot isVeg={item.is_veg === 1} />
                                   <h3 className="text-xs font-bold text-ink leading-snug font-sans tracking-tight">
